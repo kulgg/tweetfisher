@@ -1,8 +1,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import LoadingAnimation from "../components/loading";
 
 const Home: NextPage = () => {
+  const webArchiveUrl = "https://web.archive.org/cdx/search/cdx?url=twitter.com/{username}/status&matchType=prefix&filter=statuscode:200&mimetype:text/html"
+
+
   return (
     <>
       <Head>
@@ -25,12 +29,16 @@ const Home: NextPage = () => {
             <input
               type="text"
               name="search"
+              autoComplete="off"
               id="search"
               placeholder="elonmusk"
               className="bg-neutral-900 text-gray-100 placeholder:text-gray-500 block w-full h-12 rounded-md border-gray-500 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-lg"
             />
           </div>
         </div>
+        <div className="my-4">
+        </div>
+        <LoadingAnimation /> 
       </main>
     </>
   );
