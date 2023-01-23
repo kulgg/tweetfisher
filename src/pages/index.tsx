@@ -4,6 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import LoadingAnimation from "../components/loading";
+import Tweet from "../components/tweet";
 
 const Home: NextPage = () => {
   const [usernameInput, setUsernameInput] = useState("");
@@ -52,23 +53,20 @@ const Home: NextPage = () => {
             Find Deleted Tweets
           </h1>
           <div className="mt-10 w-full sm:mt-20">
-            <label
-              htmlFor="search"
-              className="block text-lg font-medium text-indigo-200"
-            >
-              Enter a username
-            </label>
-            <form
-              onSubmit={handleSubmit}
-              className="relative mt-1 flex items-center"
-            >
+            <form onSubmit={handleSubmit} className="relative">
+              <label
+                htmlFor="search"
+                className="block text-lg font-medium text-indigo-200"
+              >
+                Enter a username
+              </label>
               <input
                 type="text"
                 name="search"
                 autoComplete="off"
                 id="search"
                 placeholder="elonmusk"
-                className="block h-12 w-full rounded-md border-gray-500 bg-neutral-900 text-lg text-gray-100 shadow-sm placeholder:text-gray-500 focus:border-[1px] focus:border-gray-300 focus:ring-1 focus:ring-emerald-700"
+                className="mt-1 block h-12 w-full rounded-md border-gray-500 bg-neutral-900 text-lg text-gray-100 shadow-sm placeholder:text-gray-500 focus:border-[1px] focus:border-gray-300 focus:ring-1 focus:ring-emerald-700"
                 value={usernameInput}
                 onChange={(e) => setUsernameInput(e.currentTarget.value)}
               />
@@ -76,7 +74,7 @@ const Home: NextPage = () => {
           </div>
           <div className="mt-6"></div>
           {currentUsername && (
-            <div className="mb-3 mr-auto rounded-lg bg-gray-800 p-2 text-lg text-zinc-300">
+            <div className="mb-3 mr-auto rounded-lg bg-gray-800 py-1 px-2 text-lg text-zinc-300">
               @{currentUsername}
             </div>
           )}
@@ -109,6 +107,18 @@ const Home: NextPage = () => {
               archived tweets.
             </div>
           )}
+          <Tweet
+            pfp={
+              "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
+            }
+            text={
+              "Next Twitter update will remember whether you were on For You (ie recommended), Following or list you made & stop switching you back to recommended tweets"
+            }
+            url={"https://twitter.com/disclosetv/status/1617540634482708481"}
+            username="Elon Musk"
+            handle={"elonmusk"}
+            created={new Date()}
+          />
         </div>
       </main>
     </>
