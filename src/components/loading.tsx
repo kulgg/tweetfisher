@@ -1,12 +1,17 @@
-import React from 'react'
-import Image from 'next/image'
+import React from "react";
+import Image from "next/image";
 
 function LoadingAnimation() {
   return (
     <div>
-        <Image src="/ball-triangle.svg" height={30} width={30} alt={"Loading..."}/>
+      <Image
+        src="/ball-triangle.svg"
+        height={24}
+        width={24}
+        alt={"Loading..."}
+      />
     </div>
-  )
+  );
 }
 
-export default LoadingAnimation
+export default LoadingAnimation;
