@@ -24,7 +24,10 @@ export default async function handler(
 
   if (result) {
     const text = await result.text();
-    const statusUrls = text.split("\n").map((line) => line.split(" ")[2]!);
+    const statusUrls = text
+      .split("\n")
+      .map((line) => line.split(" ")[2])
+      .filter((x) => x);
     const uniqueStatusUrls = statusUrls.filter(
       (s, i, list) => list.indexOf(s) === i
     );
