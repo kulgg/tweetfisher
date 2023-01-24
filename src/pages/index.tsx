@@ -1,10 +1,12 @@
+import ProgressBar from "@ramonak/react-progress-bar";
 import { useQuery } from "@tanstack/react-query";
 import { setMaxIdleHTTPParsers } from "http";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import LoadingAnimation from "../components/loading";
+import LoadingAnimation from "../components/loading-animation";
+import LoadingMessage from "../components/loading-message";
 import Tweet from "../components/tweet";
 import isDeleted from "../utils/twitter";
 
@@ -13,10 +15,11 @@ function delay(ms: number) {
 }
 
 const Home: NextPage = () => {
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [currentUsername, setCurrentUsername] = useState("");
   const [deletedTweets, setDeletedTweets] = useState<string[]>([]);
-  const [fetchedTweetStatus, setFetchedTweetStatus] = useState(false);
+  const [numFetched, setNumFetched] = useState(0);
 
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
@@ -28,38 +31,56 @@ const Home: NextPage = () => {
     enabled: false,
   });
 
+  const isStepTwo = useEffect(() => {
+    if (
+      !archiveQuery.data ||
+      archiveQuery.data.statusUrls === undefined ||
+      step > 2
+    ) {
+      return;
+    }
+
+    setStep(2);
+  }, [archiveQuery.data]);
+
   console.log(usernameInput);
   console.log("data", archiveQuery.data);
   console.log("deleted", deletedTweets);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    setStep(1);
     e.preventDefault();
-    setFetchedTweetStatus(false);
     console.log("submitted");
     setCurrentUsername(usernameInput);
     archiveQuery.refetch();
     setUsernameInput("");
   };
 
-  const shouldFetchStatus =
-    !archiveQuery.isFetching &&
-    !archiveQuery.isError &&
-    archiveQuery.data &&
-    archiveQuery.data.statusUrls &&
-    !fetchedTweetStatus;
+  console.log("isStepTwo", isStepTwo);
 
-  if (shouldFetchStatus) {
-    for (const url of archiveQuery.data.statusUrls) {
-      delay(500).then(() => {
-        isDeleted(url).then((x) => {
-          if (x) {
-            setDeletedTweets((prev) => [...prev, url]);
-          }
-        });
-      });
+  useEffect(() => {
+    switch (step) {
+      case 2:
+        setStep(3);
+        for (let i = 0; i < archiveQuery.data.statusUrls.length; i++) {
+          delay(1000).then(() => {
+            isDeleted(archiveQuery.data.statusUrls[i]).then((x) => {
+              if (x) {
+                setDeletedTweets((prev) => [
+                  ...prev,
+                  archiveQuery.data.statusUrls[i],
+                ]);
+              }
+              setNumFetched((prev) => prev + 1);
+              if (i === archiveQuery.data.statusUrls.length - 1) {
+                setStep(4);
+              }
+            });
+          });
+        }
+        break;
     }
-    setFetchedTweetStatus(true);
-  }
+  }, [step]);
 
   return (
     <>
@@ -100,39 +121,40 @@ const Home: NextPage = () => {
             </div>
           )}
           {archiveQuery.isFetching && (
-            <div className="mr-auto flex flex-row items-center gap-2">
-              <div className="flex items-center gap-1 text-xl text-gray-200">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="h-6 w-6 text-emerald-200"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
-                  />
-                </svg>
-                <div>Searching for archived tweets</div>
+            <LoadingMessage message="Searching for archived tweets" />
+          )}
+          {step >= 2 && (
+            <div className="">
+              <div className="grid grid-cols-3 gap-2 text-lg">
+                <span className="text-right font-semibold text-emerald-200">
+                  {archiveQuery.data.statusUrls.length}
+                </span>
+                <div className="col-span-2">archived tweets.</div>
               </div>
-              <LoadingAnimation />
             </div>
           )}
-          {!archiveQuery.isFetching && archiveQuery.data && (
-            <div className="mr-auto text-xl">
-              Discovered{" "}
-              <span className="text-emerald-200">
-                {archiveQuery.data.statusUrls.length}
-              </span>{" "}
-              archived tweets.
+          {step === 3 && (
+            <div className="my-7">
+              <LoadingMessage message="Checking for deleted tweets" />
+              <div className="my-2"></div>
+              <ProgressBar
+                completed={numFetched}
+                maxCompleted={archiveQuery.data.statusUrls.length}
+                className="w-full rounded-full border border-gray-400"
+                bgColor="#a7f3d0"
+                baseBgColor="#374151"
+                isLabelVisible={false}
+              />
             </div>
           )}
-          {deletedTweets.length > 0 && (
-            <div className="mb-3 mr-auto rounded-lg bg-gray-800 py-1 px-2 text-lg text-zinc-300">
-              Deleted Tweets: {deletedTweets.length}
+          {step >= 4 && (
+            <div className="">
+              <div className="grid grid-cols-3 gap-2 text-lg">
+                <span className="text-right font-semibold text-rose-200">
+                  {deletedTweets.length}
+                </span>
+                <div className="col-span-2">deleted tweets.</div>
+              </div>
             </div>
           )}
           {/* <Tweet
