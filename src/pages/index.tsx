@@ -17,14 +17,14 @@ function delay(ms: number) {
 const Home: NextPage = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
-  const [currentUsername, setCurrentUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [deletedTweets, setDeletedTweets] = useState<string[]>([]);
   const [numFetched, setNumFetched] = useState(0);
 
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
     queryFn: async () => {
-      const response = await fetch(`/api/archive/${usernameInput}`);
+      const response = await fetch(`/api/archive/tweets/${usernameInput}`);
       const result = await response.json();
       return result;
     },
@@ -32,11 +32,7 @@ const Home: NextPage = () => {
   });
 
   const isStepTwo = useEffect(() => {
-    if (
-      !archiveQuery.data ||
-      archiveQuery.data.statusUrls === undefined ||
-      step > 2
-    ) {
+    if (!archiveQuery.data || archiveQuery.data === undefined || step > 2) {
       return;
     }
 
@@ -51,7 +47,7 @@ const Home: NextPage = () => {
     setStep(1);
     e.preventDefault();
     console.log("submitted");
-    setCurrentUsername(usernameInput);
+    setUsername(usernameInput);
     archiveQuery.refetch();
     setUsernameInput("");
   };
@@ -62,17 +58,14 @@ const Home: NextPage = () => {
     switch (step) {
       case 2:
         setStep(3);
-        for (let i = 0; i < archiveQuery.data.statusUrls.length; i++) {
+        for (let i = 0; i < archiveQuery.data.length; i++) {
           delay(1000).then(() => {
-            isDeleted(archiveQuery.data.statusUrls[i]).then((x) => {
+            isDeleted(archiveQuery.data[i].url).then((x) => {
               if (x) {
-                setDeletedTweets((prev) => [
-                  ...prev,
-                  archiveQuery.data.statusUrls[i],
-                ]);
+                setDeletedTweets((prev) => [...prev, archiveQuery.data[i]]);
               }
               setNumFetched((prev) => prev + 1);
-              if (i === archiveQuery.data.statusUrls.length - 1) {
+              if (i === archiveQuery.data.length - 1) {
                 setStep(4);
               }
             });
@@ -115,9 +108,9 @@ const Home: NextPage = () => {
             </form>
           </div>
           <div className="mt-6"></div>
-          {currentUsername && (
+          {username && (
             <div className="mb-3 mr-auto rounded-lg bg-gray-800 py-1 px-2 text-lg text-zinc-300">
-              @{currentUsername}
+              @{username}
             </div>
           )}
           {archiveQuery.isFetching && (
@@ -127,9 +120,17 @@ const Home: NextPage = () => {
             <div className="">
               <div className="grid grid-cols-3 gap-2 text-lg">
                 <span className="text-right font-semibold text-emerald-200">
-                  {archiveQuery.data.statusUrls.length}
+                  {archiveQuery.data.length}
                 </span>
                 <div className="col-span-2">archived tweets.</div>
+              </div>
+              <div className="">
+                <div className="grid grid-cols-3 gap-2 text-lg">
+                  <span className="text-right font-semibold text-rose-200">
+                    {deletedTweets.length}
+                  </span>
+                  <div className="col-span-2">deleted tweets.</div>
+                </div>
               </div>
             </div>
           )}
@@ -139,7 +140,7 @@ const Home: NextPage = () => {
               <div className="my-2"></div>
               <ProgressBar
                 completed={numFetched}
-                maxCompleted={archiveQuery.data.statusUrls.length}
+                maxCompleted={archiveQuery.data.length}
                 className="w-full rounded-full border border-gray-400"
                 bgColor="#a7f3d0"
                 baseBgColor="#374151"
@@ -147,28 +148,52 @@ const Home: NextPage = () => {
               />
             </div>
           )}
-          {step >= 4 && (
-            <div className="">
-              <div className="grid grid-cols-3 gap-2 text-lg">
-                <span className="text-right font-semibold text-rose-200">
-                  {deletedTweets.length}
-                </span>
-                <div className="col-span-2">deleted tweets.</div>
-              </div>
-            </div>
-          )}
-          {/* <Tweet
-            pfp={
-              "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
-            }
-            text={
-              "Next Twitter update will remember whether you were on For You (ie recommended), Following or list you made & stop switching you back to recommended tweets"
-            }
-            url={"https://twitter.com/disclosetv/status/1617540634482708481"}
-            username="Elon Musk"
-            handle={"elonmusk"}
-            created={new Date()}
-          /> */}
+          {/* <div className="my-10 flex flex-col gap-4">
+            <Tweet
+              pfp={
+                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
+              }
+              text={
+                "Next Twitter update will remember whether you were on For You (ie recommended), Following or list you made & stop switching you back to recommended tweets"
+              }
+              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
+              username="Elon Musk"
+              handle={"elonmusk"}
+              created={new Date()}
+            />
+            <Tweet
+              pfp={
+                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
+              }
+              text={"Blah blah blah"}
+              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
+              username="Elon Musk"
+              handle={"elonmusk"}
+              created={new Date()}
+            />
+            <Tweet
+              pfp={
+                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
+              }
+              text={"Next Twitter update will remember whether you "}
+              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
+              username="Elon Musk"
+              handle={"elonmusk"}
+              created={new Date()}
+            />
+            <Tweet
+              pfp={
+                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
+              }
+              text={
+                "Following or list you made & stop switching you back to recommended tweets"
+              }
+              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
+              username="Elon Musk"
+              handle={"elonmusk"}
+              created={new Date()}
+            />
+          </div> */}
         </div>
       </main>
     </>
