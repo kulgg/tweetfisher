@@ -1,14 +1,10 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import { useQuery } from "@tanstack/react-query";
-import { setMaxIdleHTTPParsers } from "http";
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
-import LoadingAnimation from "../components/loading-animation";
 import LoadingMessage from "../components/loading-message";
-import Tweet from "../components/tweet";
 import isDeleted from "../utils/twitter";
 
 function delay(ms: number) {
@@ -20,7 +16,7 @@ type DeletedTweet = {
   url: string;
 };
 
-type FullDeletedTweet = {
+export type FullDeletedTweet = {
   tweet: string;
   username: string;
   date: string;
@@ -190,20 +186,7 @@ const Home: NextPage = () => {
               />
             </div>
           )}
-          {step === 4 &&
-            fullDeletedTweet.map((x) => {
-              return (
-                <Tweet
-                  key={x.tweet}
-                  text={x.tweet}
-                  username={x.username}
-                  created={x.date}
-                  pfp={x.pfp.replace("_bigger", "_400x400")}
-                  url="#"
-                  handle="blah"
-                />
-              );
-            })}
+          {step === 4 && <DeletedTweets tweets={fullDeletedTweet} />}
         </div>
       </main>
     </>
