@@ -9,7 +9,7 @@ export type TweetProps = {
   url: string;
   handle: string;
   username: string;
-  created: Date;
+  created: string;
 };
 
 function Tweet({ pfp, text, url, handle, username, created }: TweetProps) {
@@ -33,7 +33,7 @@ function Tweet({ pfp, text, url, handle, username, created }: TweetProps) {
         </div>
         <div className="my-3 text-xl sm:my-6 sm:text-2xl">{text}</div>
         <div className="text-[15px] text-neutral-500 sm:text-base">
-          {formatDate(created)}
+          {created}
         </div>
         <div className="my-3 sm:my-6"></div>
       </div>

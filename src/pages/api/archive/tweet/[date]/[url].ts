@@ -23,17 +23,48 @@ export default async function handler(
   });
 
   if (result) {
-    const text = await result.text();
-    const statusUrls = text
-      .split("\n")
-      .map((line) => line.split(" ")[2])
-      .filter((x) => x);
-    const uniqueStatusUrls = statusUrls.filter(
-      (s, i, list) => list.indexOf(s) === i
-    );
-    return res.status(200).json({
-      statusUrls: uniqueStatusUrls,
-    });
+    let text = await result.text();
+
+    let regex =
+      /<div class="permalink-inner permalink-tweet-container([\s\S]*)/;
+    let match = text.match(regex);
+    if (!match || match[1] === undefined) {
+      return res.status(500).json("Server error");
+    }
+    text = match[1];
+
+    regex =
+      /<p class="TweetTextSize TweetTextSize--jumbo js-tweet-text tweet-text" lang="en" data-aria-label-part="0">(.+?)<\/p>/;
+    match = text.match(regex);
+    if (!match) {
+      return res.status(500).json("Server error");
+    }
+    const tweet = match[1];
+
+    regex = /<strong class="fullname.*?>(.+?)<\/strong>/;
+    match = text.match(regex);
+    if (!match) {
+      return res.status(500).json("Server error");
+    }
+    const username = match[1];
+
+    regex = /<span>(\d{1,2}:\d{2} [A|P]M.*?\d{4})<\/span>/;
+    match = text.match(regex);
+    if (!match) {
+      return res.status(500).json("Server error");
+    }
+    const date = match[1];
+
+    regex = /<img class="avatar js-action-profile-avatar" src="(.+?)"/;
+    match = text.match(regex);
+    if (!match) {
+      return res.status(500).json("Server error");
+    }
+    const imgUrl = match[1];
+
+    return res
+      .status(200)
+      .json({ tweet: tweet, username: username, date: date, pfp: imgUrl });
   }
 
   return res.status(500).json("Server error");

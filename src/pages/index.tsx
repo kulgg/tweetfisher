@@ -5,6 +5,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import DeletedTweets from "../components/deleted-tweets";
 import LoadingAnimation from "../components/loading-animation";
 import LoadingMessage from "../components/loading-message";
 import Tweet from "../components/tweet";
@@ -14,12 +15,27 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+type DeletedTweet = {
+  date: string;
+  url: string;
+};
+
+type FullDeletedTweet = {
+  tweet: string;
+  username: string;
+  date: string;
+  pfp: string;
+};
+
 const Home: NextPage = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
-  const [deletedTweets, setDeletedTweets] = useState<string[]>([]);
+  const [deletedTweets, setDeletedTweets] = useState<DeletedTweet[]>([]);
   const [numFetched, setNumFetched] = useState(0);
+  const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
+    []
+  );
 
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
@@ -42,22 +58,31 @@ const Home: NextPage = () => {
   console.log(usernameInput);
   console.log("data", archiveQuery.data);
   console.log("deleted", deletedTweets);
+  console.log("fullDeleted", fullDeletedTweet);
+
+  const reset = () => {
+    setUsernameInput("");
+    setDeletedTweets([]);
+    setFullDeletedTweet([]);
+    setNumFetched(0);
+    setStep(1);
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    setStep(1);
     e.preventDefault();
     console.log("submitted");
     setUsername(usernameInput);
     archiveQuery.refetch();
-    setUsernameInput("");
+    reset();
   };
-
-  console.log("isStepTwo", isStepTwo);
 
   useEffect(() => {
     switch (step) {
       case 2:
         setStep(3);
+        if (archiveQuery.data.length === 0) {
+          setStep(4);
+        }
         for (let i = 0; i < archiveQuery.data.length; i++) {
           delay(1000).then(() => {
             isDeleted(archiveQuery.data[i].url).then((x) => {
@@ -70,6 +95,23 @@ const Home: NextPage = () => {
               }
             });
           });
+        }
+        break;
+      case 3:
+        break;
+      case 4:
+        for (let i = 0; i < deletedTweets.length; i++) {
+          const result = fetch(
+            `/api/archive/tweet/${deletedTweets[i]!.date}/${encodeURIComponent(
+              deletedTweets[i]!.url
+            )}`
+          )
+            .then((x) => x.json())
+            .then((x) => {
+              if (x !== "Server error") {
+                setFullDeletedTweet((prev) => [...prev, x]);
+              }
+            });
         }
         break;
     }
@@ -148,52 +190,20 @@ const Home: NextPage = () => {
               />
             </div>
           )}
-          {/* <div className="my-10 flex flex-col gap-4">
-            <Tweet
-              pfp={
-                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
-              }
-              text={
-                "Next Twitter update will remember whether you were on For You (ie recommended), Following or list you made & stop switching you back to recommended tweets"
-              }
-              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
-              username="Elon Musk"
-              handle={"elonmusk"}
-              created={new Date()}
-            />
-            <Tweet
-              pfp={
-                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
-              }
-              text={"Blah blah blah"}
-              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
-              username="Elon Musk"
-              handle={"elonmusk"}
-              created={new Date()}
-            />
-            <Tweet
-              pfp={
-                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
-              }
-              text={"Next Twitter update will remember whether you "}
-              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
-              username="Elon Musk"
-              handle={"elonmusk"}
-              created={new Date()}
-            />
-            <Tweet
-              pfp={
-                "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
-              }
-              text={
-                "Following or list you made & stop switching you back to recommended tweets"
-              }
-              url={"https://twitter.com/disclosetv/status/1617540634482708481"}
-              username="Elon Musk"
-              handle={"elonmusk"}
-              created={new Date()}
-            />
-          </div> */}
+          {step === 4 &&
+            fullDeletedTweet.map((x) => {
+              return (
+                <Tweet
+                  key={x.tweet}
+                  text={x.tweet}
+                  username={x.username}
+                  created={x.date}
+                  pfp={x.pfp.replace("_bigger", "_400x400")}
+                  url="#"
+                  handle="blah"
+                />
+              );
+            })}
         </div>
       </main>
     </>
