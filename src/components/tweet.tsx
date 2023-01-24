@@ -15,23 +15,27 @@ export type TweetProps = {
 function Tweet({ pfp, text, url, handle, username, created }: TweetProps) {
   return (
     <a href={url}>
-      <div className="w-[598px] border-b border-gray-700">
+      <div className="w-full border-b border-gray-700 sm:w-[598px]">
         <div className="flex items-center gap-3">
           <div>
             <img
               src={pfp}
               alt="profile pic"
-              className="h-14 w-14 rounded-full"
+              className="h-12 w-12 rounded-full sm:h-14 sm:w-14"
             />
           </div>
           <div>
-            <div className="text-lg font-semibold">{username}</div>
-            <div className="text-neutral-500">@{handle}</div>
+            <div className="font-semibold sm:text-lg">{username}</div>
+            <div className="text-sm text-neutral-500 sm:text-base">
+              @{handle}
+            </div>
           </div>
         </div>
-        <div className="my-6 text-2xl">{text}</div>
-        <div className="text-neutral-500">{formatDate(created)}</div>
-        <div className="my-6"></div>
+        <div className="my-3 text-xl sm:my-6 sm:text-2xl">{text}</div>
+        <div className="text-[15px] text-neutral-500 sm:text-base">
+          {formatDate(created)}
+        </div>
+        <div className="my-3 sm:my-6"></div>
       </div>
     </a>
   );
