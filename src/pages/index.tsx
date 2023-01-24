@@ -1,16 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
+import { setMaxIdleHTTPParsers } from "http";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import LoadingAnimation from "../components/loading";
 import Tweet from "../components/tweet";
+import isDeleted from "../utils/twitter";
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const Home: NextPage = () => {
   const [usernameInput, setUsernameInput] = useState("");
   const [currentUsername, setCurrentUsername] = useState("");
+  const [deletedTweets, setDeletedTweets] = useState<string[]>([]);
+  const [fetchedTweetStatus, setFetchedTweetStatus] = useState(false);
 
-  const { isLoading, error, data, refetch, isFetching } = useQuery({
+  const archiveQuery = useQuery({
     queryKey: ["webarchive"],
     queryFn: async () => {
       const response = await fetch(`/api/archive/${usernameInput}`);
@@ -21,24 +29,37 @@ const Home: NextPage = () => {
   });
 
   console.log(usernameInput);
-  console.log("isloading", isLoading);
-  console.log("data", data);
+  console.log("data", archiveQuery.data);
+  console.log("deleted", deletedTweets);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFetchedTweetStatus(false);
     console.log("submitted");
     setCurrentUsername(usernameInput);
-    refetch();
+    archiveQuery.refetch();
     setUsernameInput("");
   };
 
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
+  const shouldFetchStatus =
+    !archiveQuery.isFetching &&
+    !archiveQuery.isError &&
+    archiveQuery.data &&
+    archiveQuery.data.statusUrls &&
+    !fetchedTweetStatus;
 
-    // refetch other query
-  }, [data]);
+  if (shouldFetchStatus) {
+    for (const url of archiveQuery.data.statusUrls) {
+      delay(500).then(() => {
+        isDeleted(url).then((x) => {
+          if (x) {
+            setDeletedTweets((prev) => [...prev, url]);
+          }
+        });
+      });
+    }
+    setFetchedTweetStatus(true);
+  }
 
   return (
     <>
@@ -78,7 +99,7 @@ const Home: NextPage = () => {
               @{currentUsername}
             </div>
           )}
-          {isFetching && (
+          {archiveQuery.isFetching && (
             <div className="mr-auto flex flex-row items-center gap-2">
               <div className="flex items-center gap-1 text-xl text-gray-200">
                 <svg
@@ -100,14 +121,21 @@ const Home: NextPage = () => {
               <LoadingAnimation />
             </div>
           )}
-          {!isFetching && data && (
+          {!archiveQuery.isFetching && archiveQuery.data && (
             <div className="mr-auto text-xl">
               Discovered{" "}
-              <span className="text-emerald-200">{data.statusUrls.length}</span>{" "}
+              <span className="text-emerald-200">
+                {archiveQuery.data.statusUrls.length}
+              </span>{" "}
               archived tweets.
             </div>
           )}
-          <Tweet
+          {deletedTweets.length > 0 && (
+            <div className="mb-3 mr-auto rounded-lg bg-gray-800 py-1 px-2 text-lg text-zinc-300">
+              Deleted Tweets: {deletedTweets.length}
+            </div>
+          )}
+          {/* <Tweet
             pfp={
               "https://pbs.twimg.com/profile_images/1590968738358079488/IY9Gx6Ok_400x400.jpg"
             }
@@ -118,7 +146,7 @@ const Home: NextPage = () => {
             username="Elon Musk"
             handle={"elonmusk"}
             created={new Date()}
-          />
+          /> */}
         </div>
       </main>
     </>

@@ -15,7 +15,7 @@ export type TweetProps = {
 function Tweet({ pfp, text, url, handle, username, created }: TweetProps) {
   return (
     <a href={url}>
-      <div className="w-[598px] border-t border-b border-gray-700 py-2">
+      <div className="w-[598px] border-b border-gray-700">
         <div className="flex items-center gap-3">
           <div>
             <img
@@ -31,6 +31,7 @@ function Tweet({ pfp, text, url, handle, username, created }: TweetProps) {
         </div>
         <div className="my-6 text-2xl">{text}</div>
         <div className="text-neutral-500">{formatDate(created)}</div>
+        <div className="my-6"></div>
       </div>
     </a>
   );
