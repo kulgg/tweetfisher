@@ -15,9 +15,13 @@ const formatTextContent = (t: FullDeletedTweet): FullDeletedTweet => {
   const linkRegex = /<a href=".+?>(.+?)<\/a>/gm;
   const emojiInUsernameRegex =
     /<span class="Emoji Emoji--forLinks.+?<span class="visuallyhidden".+?>(.+?)<\/span>/gm;
+  const spanLinkRegex =
+    /<span class="tco-ellipsis"><\/span><span class="invisible">https:\/\/<\/span><span.+?>(.+?)<\/span><span class="invisible">(.+?)<\/span>.+?<\/span>.+?<\/span>/gm;
+
   t.tweet = t.tweet.replaceAll(emojiRegex, "$1");
   t.tweet = t.tweet.replaceAll(handleRegex, "@$1");
   t.tweet = t.tweet.replaceAll(linkRegex, " $1");
+  t.tweet = t.tweet.replaceAll(spanLinkRegex, "$1$2");
   t.tweet = replaceNamedEntities(t.tweet);
   t.username = t.username.replaceAll(emojiInUsernameRegex, "$1");
   t.username = replaceNamedEntities(t.username);

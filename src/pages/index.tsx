@@ -1,5 +1,5 @@
 import ProgressBar from "@ramonak/react-progress-bar";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { type NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
@@ -35,6 +35,7 @@ const Home: NextPage = () => {
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
     []
   );
+  const queryClient = useQueryClient();
 
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
@@ -44,15 +45,10 @@ const Home: NextPage = () => {
       return result;
     },
     enabled: false,
+    onSuccess: () => {
+      setStep(2);
+    },
   });
-
-  const isStepTwo = useEffect(() => {
-    if (!archiveQuery.data || archiveQuery.data === undefined || step > 2) {
-      return;
-    }
-
-    setStep(2);
-  }, [archiveQuery.data]);
 
   console.log(usernameInput);
   console.log("data", archiveQuery.data);
@@ -61,18 +57,18 @@ const Home: NextPage = () => {
 
   const reset = () => {
     setUsernameInput("");
+    setStep(1);
     setDeletedTweets([]);
     setFullDeletedTweet([]);
     setNumFetched(0);
-    setStep(1);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("submitted");
     setUsername(usernameInput);
-    archiveQuery.refetch();
     reset();
+    archiveQuery.refetch();
   };
 
   useEffect(() => {

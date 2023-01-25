@@ -15,3 +15,4 @@ ToDo
 - [ ] Do requests concurrently with ability to set max TPS
 - [ ] Fetch deleted tweets parallel to status checking process
 - [ ] Show deleted tweets fetching process
+- [ ] Backend should request multiple times incase of failure
