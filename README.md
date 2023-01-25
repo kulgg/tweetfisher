@@ -12,7 +12,8 @@ As a solution, all requests are wrapped by Next.js API routes. Unfortunately thi
 
 ToDo
 
+- [x] Backend should request multiple times incase of failure
 - [ ] Do requests concurrently with ability to set max TPS
 - [ ] Fetch deleted tweets parallel to status checking process
 - [ ] Show deleted tweets fetching process
-- [ ] Backend should request multiple times incase of failure
+- [ ] Support parsing of Jul 2022 and later version
