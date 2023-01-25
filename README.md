@@ -1,28 +1,17 @@
-# Create T3 App
+# Find Deleted Tweets
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Next.js app that finds deleted tweets that have been archived by the wayback machine ([archive.org](https://web.archive.org/))
 
-## What's next? How do I make an app with this?
+### Why are the requests not done client side?
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Initially I wanted to do all requests client side so that I could host the app for users and not run into throttling problems. However, I quickly discovered that it's not possible.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Both archive.org and twitter.com do not set the needed CORS headers. Therefore you cannot access the contents of the response from frontend code even if you set 'no-cors' mode for the request. Additionally the HTTP HEAD requests to twitter.com that check wether tweets have been deleted need to imitate search engine headers to work. This can also not be done in frontend requests because the browser always adds additional headers.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+As a solution, all requests are wrapped by Next.js API routes. Unfortunately this means that it is hard to host this app for distributed use, because of throttling contraints.
 
-## Learn More
+ToDo
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- [ ] Do requests concurrently with ability to set max TPS
+- [ ] Fetch deleted tweets parallel to status checking process
+- [ ] Show deleted tweets fetching process
