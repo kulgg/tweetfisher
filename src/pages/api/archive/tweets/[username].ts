@@ -26,8 +26,8 @@ export default async function handler(
 
     const data = lines
       .map((line) => line.split(" "))
-      .map((x) => ({ date: x[1]!, url: x[2]! }))
-      .filter((x) => x.date !== undefined && x.url !== undefined);
+      .map((x) => ({ archiveDate: x[1]!, url: x[2]! }))
+      .filter((x) => x.archiveDate !== undefined && x.url !== undefined);
 
     return res.status(200).json(data);
   }

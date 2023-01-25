@@ -29,9 +29,5 @@ export default async function handler(
     return res.status(500).json("Server error");
   }
 
-  if (result.status === 404) {
-    return res.status(404).json("Does not exist");
-  }
-
-  return res.status(200).json("Exists");
+  return res.status(result.status).json(result.statusText);
 }

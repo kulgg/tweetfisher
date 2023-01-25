@@ -13,8 +13,8 @@ function DeletedTweets({ tweets }: { tweets: FullDeletedTweet[] }) {
           username={x.username}
           created={x.date}
           pfp={x.pfp.replace("_bigger", "_400x400")}
-          url="#"
-          handle="blah"
+          url={x.url}
+          handle={x.handle}
         />
       ))}
     </div>

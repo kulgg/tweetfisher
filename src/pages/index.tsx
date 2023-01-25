@@ -5,14 +5,14 @@ import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import LoadingMessage from "../components/loading-message";
-import isDeleted from "../utils/twitter";
+import fetchTweetStatus from "../utils/twitter";
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 type DeletedTweet = {
-  date: string;
+  archiveDate: string;
   url: string;
 };
 
@@ -21,6 +21,8 @@ export type FullDeletedTweet = {
   username: string;
   date: string;
   pfp: string;
+  url: string;
+  handle: string;
 };
 
 const Home: NextPage = () => {
@@ -81,11 +83,16 @@ const Home: NextPage = () => {
         }
         for (let i = 0; i < archiveQuery.data.length; i++) {
           delay(1000).then(() => {
-            isDeleted(archiveQuery.data[i].url).then((x) => {
-              if (x) {
+            fetchTweetStatus(archiveQuery.data[i].url).then((x) => {
+              if (x === 404) {
                 setDeletedTweets((prev) => [...prev, archiveQuery.data[i]]);
               }
-              setNumFetched((prev) => prev + 1);
+
+              if (x == 429) {
+                console.log("Too many requests");
+              } else {
+                setNumFetched((prev) => prev + 1);
+              }
               if (i === archiveQuery.data.length - 1) {
                 setStep(4);
               }
@@ -98,14 +105,23 @@ const Home: NextPage = () => {
       case 4:
         for (let i = 0; i < deletedTweets.length; i++) {
           const result = fetch(
-            `/api/archive/tweet/${deletedTweets[i]!.date}/${encodeURIComponent(
-              deletedTweets[i]!.url
-            )}`
+            `/api/archive/tweet/${
+              deletedTweets[i]!.archiveDate
+            }/${encodeURIComponent(deletedTweets[i]!.url)}`
           )
             .then((x) => x.json())
             .then((x) => {
               if (x !== "Server error") {
-                setFullDeletedTweet((prev) => [...prev, x]);
+                setFullDeletedTweet((prev) => [
+                  ...prev,
+                  {
+                    ...x,
+                    url: `https://web.archive.org/web/${
+                      deletedTweets[i]!.archiveDate
+                    }/${deletedTweets[i]!.url}`,
+                    handle: username,
+                  },
+                ]);
               }
             });
         }

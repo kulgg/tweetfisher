@@ -46,8 +46,8 @@ function ArchivedTweet({
     "https://www.clipartmax.com/png/small/165-1658552_man-silhouette-clip-art-profile-clipart.png";
 
   return (
-    <a href={url}>
-      <div className="w-full border-b border-gray-700 sm:w-[598px]">
+    <div className="w-full border-b border-gray-700 sm:w-[598px]">
+      <div className="flex justify-between">
         <div className="flex items-center gap-3">
           <div>
             <img
@@ -66,13 +66,19 @@ function ArchivedTweet({
             </div>
           </div>
         </div>
-        <div className="my-3 text-xl sm:my-6 sm:text-2xl">{text}</div>
-        <div className="text-[15px] text-neutral-500 sm:text-base">
-          {created}
+        <div className="">
+          <a
+            href={url}
+            className="border-1 select-none rounded-md bg-gray-700 px-2 py-1 text-xs text-gray-200 hover:underline"
+          >
+            Archive
+          </a>
         </div>
-        <div className="my-3 sm:my-6"></div>
       </div>
-    </a>
+      <div className="my-3 text-xl sm:my-6 sm:text-2xl">{text}</div>
+      <div className="text-[15px] text-neutral-500 sm:text-base">{created}</div>
+      <div className="my-3 sm:my-6"></div>
+    </div>
   );
 }
 

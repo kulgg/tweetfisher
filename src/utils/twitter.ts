@@ -1,9 +1,9 @@
-const isDeleted = async (s: string): Promise<boolean> => {
+const fetchTweetStatus = async (s: string): Promise<number> => {
   const response = await fetch(`/api/twitter/${encodeURIComponent(s)}`, {
     method: "HEAD",
   });
 
-  return response.status === 404;
+  return response.status;
 };
 
-export default isDeleted;
+export default fetchTweetStatus;
