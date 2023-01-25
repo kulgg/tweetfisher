@@ -40,6 +40,7 @@ export default async function handler(
       return res.status(500).json("Server error");
     }
     const tweet = match[1];
+    console.log("tweet", tweet);
 
     regex = /<strong class="fullname.*?>(.+?)<\/strong>/;
     match = text.match(regex);
@@ -47,6 +48,7 @@ export default async function handler(
       return res.status(500).json("Server error");
     }
     const username = match[1];
+    console.log("username", username);
 
     regex = /<span>(\d{1,2}:\d{2} [A|P]M.*?\d{4})<\/span>/;
     match = text.match(regex);
@@ -54,6 +56,7 @@ export default async function handler(
       return res.status(500).json("Server error");
     }
     const date = match[1];
+    console.log("date", date);
 
     regex = /<img class="avatar js-action-profile-avatar" src="(.+?)"/;
     match = text.match(regex);
@@ -61,6 +64,7 @@ export default async function handler(
       return res.status(500).json("Server error");
     }
     const imgUrl = match[1];
+    console.log("imgUrl", imgUrl);
 
     return res
       .status(200)
