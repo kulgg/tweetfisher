@@ -12,15 +12,6 @@ export type TweetProps = {
   created: string;
 };
 
-function replaceNamedEntities(s: string) {
-  s = s.replaceAll("&lt;", "<");
-  s = s.replaceAll("&gt;", ">");
-  s = s.replaceAll("&quot;", '"');
-  s = s.replaceAll("&#39;", "'");
-  s = s.replaceAll("&nbsp;", " ");
-  return s;
-}
-
 function ArchivedTweet({
   pfp,
   text,
@@ -30,17 +21,6 @@ function ArchivedTweet({
   created,
 }: TweetProps) {
   const [pfpUrl, setPfpUrl] = useState(pfp);
-  const emojiRegex = /<img class="Emoji Emoji--forText".+?alt="(.+?)".+?>/gm;
-  const handleRegex = /<a href=".+?<b>(.+?)<\/b><\/a>/gm;
-  const linkRegex = /<a href=".+?>(.+?)<\/a>/gm;
-  const emojiInUsernameRegex =
-    /<span class="Emoji Emoji--forLinks.+?<span class="visuallyhidden".+?>(.+?)<\/span>/gm;
-  text = text.replaceAll(emojiRegex, "$1");
-  text = text.replaceAll(handleRegex, "@$1");
-  text = text.replaceAll(linkRegex, " $1");
-  text = replaceNamedEntities(text);
-  username = username.replaceAll(emojiInUsernameRegex, "$1");
-  username = replaceNamedEntities(username);
 
   const fallbackPfp =
     "https://www.clipartmax.com/png/small/165-1658552_man-silhouette-clip-art-profile-clipart.png";
@@ -55,6 +35,10 @@ function ArchivedTweet({
               alt="profile pic"
               className="h-12 w-12 rounded-full sm:h-14 sm:w-14"
               onError={() => {
+                if (pfpUrl === pfp) {
+                  setPfpUrl(pfp.replace("_bigger", "_400x400"));
+                  return;
+                }
                 setPfpUrl(fallbackPfp);
               }}
             />
@@ -75,7 +59,9 @@ function ArchivedTweet({
           </a>
         </div>
       </div>
-      <div className="my-3 text-xl sm:my-6 sm:text-2xl">{text}</div>
+      <div className="my-3 whitespace-pre-line text-xl sm:my-6 sm:text-2xl">
+        {text}
+      </div>
       <div className="text-[15px] text-neutral-500 sm:text-base">{created}</div>
       <div className="my-3 sm:my-6"></div>
     </div>

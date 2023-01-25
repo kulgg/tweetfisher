@@ -5,6 +5,7 @@ import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import LoadingMessage from "../components/loading-message";
+import formatTextContent from "../utils/formatter";
 import fetchTweetStatus from "../utils/twitter";
 
 function delay(ms: number) {
@@ -114,13 +115,13 @@ const Home: NextPage = () => {
               if (x !== "Server error") {
                 setFullDeletedTweet((prev) => [
                   ...prev,
-                  {
+                  formatTextContent({
                     ...x,
                     url: `https://web.archive.org/web/${
                       deletedTweets[i]!.archiveDate
                     }/${deletedTweets[i]!.url}`,
                     handle: username,
-                  },
+                  }),
                 ]);
               }
             });
@@ -189,12 +190,12 @@ const Home: NextPage = () => {
             </div>
           )}
           {step === 3 && (
-            <div className="my-7">
+            <div className="my-7 w-full">
               <LoadingMessage message="Checking for deleted tweets" />
               <div className="my-2"></div>
               <ProgressBar
                 completed={numFetched}
-                maxCompleted={archiveQuery.data.length}
+                maxCompleted={archiveQuery.data?.length}
                 className="w-full rounded-full border border-gray-400"
                 bgColor="#a7f3d0"
                 baseBgColor="#374151"
