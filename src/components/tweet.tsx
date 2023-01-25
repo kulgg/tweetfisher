@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { setDefaultResultOrder } from "dns/promises";
 import { formatDate } from "../utils/date";
@@ -12,16 +12,51 @@ export type TweetProps = {
   created: string;
 };
 
-function Tweet({ pfp, text, url, handle, username, created }: TweetProps) {
+function replaceNamedEntities(s: string) {
+  s = s.replaceAll("&lt;", "<");
+  s = s.replaceAll("&gt;", ">");
+  s = s.replaceAll("&quot;", '"');
+  s = s.replaceAll("&#39;", "'");
+  s = s.replaceAll("&nbsp;", " ");
+  return s;
+}
+
+function ArchivedTweet({
+  pfp,
+  text,
+  url,
+  handle,
+  username,
+  created,
+}: TweetProps) {
+  const [pfpUrl, setPfpUrl] = useState(pfp);
+  const emojiRegex = /<img class="Emoji Emoji--forText".+?alt="(.+?)".+?>/gm;
+  const handleRegex = /<a href=".+?<b>(.+?)<\/b><\/a>/gm;
+  const linkRegex = /<a href=".+?>(.+?)<\/a>/gm;
+  const emojiInUsernameRegex =
+    /<span class="Emoji Emoji--forLinks.+?<span class="visuallyhidden".+?>(.+?)<\/span>/gm;
+  text = text.replaceAll(emojiRegex, "$1");
+  text = text.replaceAll(handleRegex, "@$1");
+  text = text.replaceAll(linkRegex, " $1");
+  text = replaceNamedEntities(text);
+  username = username.replaceAll(emojiInUsernameRegex, "$1");
+  username = replaceNamedEntities(username);
+
+  const fallbackPfp =
+    "https://www.clipartmax.com/png/small/165-1658552_man-silhouette-clip-art-profile-clipart.png";
+
   return (
     <a href={url}>
       <div className="w-full border-b border-gray-700 sm:w-[598px]">
         <div className="flex items-center gap-3">
           <div>
             <img
-              src={pfp}
+              src={pfpUrl}
               alt="profile pic"
               className="h-12 w-12 rounded-full sm:h-14 sm:w-14"
+              onError={() => {
+                setPfpUrl(fallbackPfp);
+              }}
             />
           </div>
           <div>
@@ -41,4 +76,4 @@ function Tweet({ pfp, text, url, handle, username, created }: TweetProps) {
   );
 }
 
-export default Tweet;
+export default ArchivedTweet;
