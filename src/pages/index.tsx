@@ -8,6 +8,7 @@ import DeletedTweets from "../components/deleted-tweets";
 import LoadingMessage from "../components/loading-message";
 import formatTextContent from "../utils/formatter";
 import fetchTweetStatus from "../utils/fetch";
+import LoadingTweetsOverlay from "../components/loading-tweets-overlay";
 
 type DeletedTweet = {
   archiveDate: string;
@@ -23,8 +24,10 @@ export type FullDeletedTweet = {
   handle: string;
 };
 
-const maxConcurrentRequests = 5;
-const limit = pLimit(maxConcurrentRequests);
+const maxConcurrentTwitterRequests = 10;
+const maxConcurrentArchiveRequests = 5;
+const twitterLimit = pLimit(maxConcurrentTwitterRequests);
+const archiveLimit = pLimit(maxConcurrentArchiveRequests);
 
 const Home: NextPage = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -36,6 +39,7 @@ const Home: NextPage = () => {
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
     []
   );
+  const [fetchedUrls, setFetchedUrls] = useState<string[]>([]);
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
     queryFn: async () => {
@@ -44,8 +48,23 @@ const Home: NextPage = () => {
       return result;
     },
     enabled: false,
-    onSuccess: () => {
+    onSuccess: (data) => {
       setStep(2);
+      for (let i = 0; i < data.length; i++) {
+        twitterLimit(() =>
+          fetchTweetStatus(data[i].url).then((x) => {
+            if (x === 404) {
+              setDeletedTweets((prev) => [...prev, data[i]]);
+            }
+
+            if (x == 429) {
+              setNumMissed((prev) => prev + 1);
+            } else {
+              setNumFetched((prev) => prev + 1);
+            }
+          })
+        );
+      }
     },
   });
 
@@ -53,6 +72,7 @@ const Home: NextPage = () => {
   console.log("data", archiveQuery.data);
   console.log("deleted", deletedTweets);
   console.log("fullDeleted", fullDeletedTweet);
+  console.log("step", step);
 
   const reset = () => {
     setUsernameInput("");
@@ -71,61 +91,54 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    switch (step) {
-      case 2:
-        setStep(3);
-        if (archiveQuery.data.length === 0) {
-          setStep(4);
-        }
-        for (let i = 0; i < archiveQuery.data.length; i++) {
-          limit(() =>
-            fetchTweetStatus(archiveQuery.data[i].url).then((x) => {
-              if (x === 404) {
-                setDeletedTweets((prev) => [...prev, archiveQuery.data[i]]);
-              }
-
-              if (x == 429) {
-                setNumMissed((prev) => prev + 1);
-              } else {
-                setNumFetched((prev) => prev + 1);
-              }
-              if (i === archiveQuery.data.length - 1) {
-                setStep(4);
-              }
-            })
-          );
-        }
-        break;
-      case 3:
-        break;
-      case 4:
-        for (let i = 0; i < deletedTweets.length; i++) {
-          limit(() =>
-            fetch(
-              `/api/archive/tweet/${
-                deletedTweets[i]!.archiveDate
-              }/${encodeURIComponent(deletedTweets[i]!.url)}`
-            )
-              .then((x) => x.json())
-              .then((x) => {
-                if (x !== "Server error") {
-                  setFullDeletedTweet((prev) => [
-                    ...prev,
-                    formatTextContent({
-                      ...x,
-                      url: `https://web.archive.org/web/${
-                        deletedTweets[i]!.archiveDate
-                      }/${deletedTweets[i]!.url}`,
-                      handle: username,
-                    }),
-                  ]);
-                }
-              })
-          );
-        }
-        break;
+    for (let i = 0; i < deletedTweets.length; i++) {
+      if (fetchedUrls.find((x) => x === deletedTweets[i]!.url)) {
+        console.log("Skipping", deletedTweets[i]!.url);
+        continue;
+      }
+      console.log("Fetching", deletedTweets[i]!.url);
+      setFetchedUrls((prev) => [...prev, deletedTweets[i]!.url]);
+      archiveLimit(() =>
+        fetch(
+          `/api/archive/tweet/${
+            deletedTweets[i]!.archiveDate
+          }/${encodeURIComponent(deletedTweets[i]!.url)}`
+        )
+          .then((x) => x.json())
+          .then((x) => {
+            if (x !== "Server error") {
+              setFullDeletedTweet((prev) => [
+                ...prev,
+                formatTextContent({
+                  ...x,
+                  url: `https://web.archive.org/web/${
+                    deletedTweets[i]!.archiveDate
+                  }/${deletedTweets[i]!.url}`,
+                  handle: username,
+                }),
+              ]);
+            }
+          })
+      );
     }
-  }, [step]);
+  }, [deletedTweets]);
+
+  if (
+    step !== 3 &&
+    step !== 4 &&
+    archiveQuery.data &&
+    numFetched + numMissed === archiveQuery.data.length
+  ) {
+    setStep(3);
+  }
+  if (
+    step !== 4 &&
+    archiveQuery.data &&
+    numFetched + numMissed === archiveQuery.data.length &&
+    fullDeletedTweet.length === deletedTweets.length
+  ) {
+    setStep(4);
+  }
 
   return (
     <>
@@ -134,7 +147,7 @@ const Home: NextPage = () => {
         <meta name="description" content="Generated by create-t3-app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen overflow-hidden ">
+      <main className="flex min-h-screen overflow-x-hidden">
         <div className="container mx-auto flex flex-col items-center">
           <h1 className="mr-auto mt-2 bg-gradient-to-r from-emerald-200 to-rose-200 bg-clip-text text-[39px] font-bold text-transparent sm:mt-20 sm:text-7xl">
             Find Deleted Tweets
@@ -196,7 +209,7 @@ const Home: NextPage = () => {
               )}
             </div>
           )}
-          {step === 3 && (
+          {step === 2 && (
             <div className="my-7 w-full">
               <LoadingMessage message="Checking for deleted tweets" />
               <div className="my-2"></div>
@@ -210,7 +223,13 @@ const Home: NextPage = () => {
               />
             </div>
           )}
-          {step === 4 && <DeletedTweets tweets={fullDeletedTweet} />}
+          {step >= 2 && <DeletedTweets tweets={fullDeletedTweet} />}
+          {step >= 2 && step < 4 && (
+            <LoadingTweetsOverlay
+              numLoaded={fullDeletedTweet.length}
+              total={deletedTweets.length}
+            />
+          )}
         </div>
       </main>
     </>

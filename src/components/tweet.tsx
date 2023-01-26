@@ -22,8 +22,7 @@ function ArchivedTweet({
 }: TweetProps) {
   const [pfpUrl, setPfpUrl] = useState(pfp);
 
-  const fallbackPfp =
-    "https://www.clipartmax.com/png/small/165-1658552_man-silhouette-clip-art-profile-clipart.png";
+  const fallbackPfp = "/anon.png";
 
   return (
     <div className="w-full border-b border-gray-700 sm:w-[598px]">

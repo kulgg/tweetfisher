@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 
-function LoadingAnimation() {
+function LoadingTriangle() {
   return (
     <div>
       <Image
@@ -14,4 +14,4 @@ function LoadingAnimation() {
   );
 }
 
-export default LoadingAnimation;
+export default LoadingTriangle;

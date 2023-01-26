@@ -14,6 +14,6 @@ ToDo
 
 - [x] Backend should request multiple times incase of failure
 - [x] Do requests concurrently with ability to set max TPS
-- [ ] Fetch deleted tweets parallel to status checking process
-- [ ] Show deleted tweets fetching process
+- [x] Fetch deleted tweets parallel to status checking process
+- [x] Show deleted tweets fetching process
 - [ ] Support parsing of Jul 2022 and later version

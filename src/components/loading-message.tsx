@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingAnimation from "./loading-animation";
+import LoadingTriangle from "./loading-triangle";
 
 export type LoadingMessageProps = {
   message: string;
@@ -25,7 +25,7 @@ function LoadingMessage({ message }: LoadingMessageProps) {
         </svg>
         <div>{message}</div>
       </div>
-      <LoadingAnimation />
+      <LoadingTriangle />
     </div>
   );
 }
