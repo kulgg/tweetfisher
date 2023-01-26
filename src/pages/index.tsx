@@ -7,11 +7,7 @@ import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import LoadingMessage from "../components/loading-message";
 import formatTextContent from "../utils/formatter";
-import fetchTweetStatus from "../utils/twitter";
-
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import fetchTweetStatus from "../utils/fetch";
 
 type DeletedTweet = {
   archiveDate: string;

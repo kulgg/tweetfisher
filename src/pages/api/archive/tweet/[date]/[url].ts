@@ -1,29 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-
-const fetchPlus = async (
-  url: string,
-  options = {},
-  retries: number
-): Promise<Response | null> => {
-  try {
-    const result = await fetch(url, options);
-    if (result === null || !result.ok) {
-      if (retries > 0) {
-        console.log("retries", retries);
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        return await fetchPlus(url, options, retries - 1);
-      }
-    }
-    return result;
-  } catch (error) {
-    if (retries > 0) {
-      console.log("retries", retries);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return await fetchPlus(url, options, retries - 1);
-    }
-  }
-  return null;
-};
+import { fetchPlus } from "../../../../../utils/fetch";
 
 export default async function handler(
   req: NextApiRequest,
