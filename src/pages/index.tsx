@@ -2,6 +2,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { type NextPage } from "next";
 import Head from "next/head";
+import pLimit from "p-limit";
 import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import LoadingMessage from "../components/loading-message";
@@ -26,17 +27,19 @@ export type FullDeletedTweet = {
   handle: string;
 };
 
+const maxConcurrentRequests = 5;
+const limit = pLimit(maxConcurrentRequests);
+
 const Home: NextPage = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
   const [deletedTweets, setDeletedTweets] = useState<DeletedTweet[]>([]);
   const [numFetched, setNumFetched] = useState(0);
+  const [numMissed, setNumMissed] = useState(0);
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
     []
   );
-  const queryClient = useQueryClient();
-
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
     queryFn: async () => {
@@ -79,48 +82,50 @@ const Home: NextPage = () => {
           setStep(4);
         }
         for (let i = 0; i < archiveQuery.data.length; i++) {
-          delay(1000).then(() => {
+          limit(() =>
             fetchTweetStatus(archiveQuery.data[i].url).then((x) => {
               if (x === 404) {
                 setDeletedTweets((prev) => [...prev, archiveQuery.data[i]]);
               }
 
               if (x == 429) {
-                console.log("Too many requests");
+                setNumMissed((prev) => prev + 1);
               } else {
                 setNumFetched((prev) => prev + 1);
               }
               if (i === archiveQuery.data.length - 1) {
                 setStep(4);
               }
-            });
-          });
+            })
+          );
         }
         break;
       case 3:
         break;
       case 4:
         for (let i = 0; i < deletedTweets.length; i++) {
-          const result = fetch(
-            `/api/archive/tweet/${
-              deletedTweets[i]!.archiveDate
-            }/${encodeURIComponent(deletedTweets[i]!.url)}`
-          )
-            .then((x) => x.json())
-            .then((x) => {
-              if (x !== "Server error") {
-                setFullDeletedTweet((prev) => [
-                  ...prev,
-                  formatTextContent({
-                    ...x,
-                    url: `https://web.archive.org/web/${
-                      deletedTweets[i]!.archiveDate
-                    }/${deletedTweets[i]!.url}`,
-                    handle: username,
-                  }),
-                ]);
-              }
-            });
+          limit(() =>
+            fetch(
+              `/api/archive/tweet/${
+                deletedTweets[i]!.archiveDate
+              }/${encodeURIComponent(deletedTweets[i]!.url)}`
+            )
+              .then((x) => x.json())
+              .then((x) => {
+                if (x !== "Server error") {
+                  setFullDeletedTweet((prev) => [
+                    ...prev,
+                    formatTextContent({
+                      ...x,
+                      url: `https://web.archive.org/web/${
+                        deletedTweets[i]!.archiveDate
+                      }/${deletedTweets[i]!.url}`,
+                      handle: username,
+                    }),
+                  ]);
+                }
+              })
+          );
         }
         break;
     }
@@ -183,6 +188,16 @@ const Home: NextPage = () => {
                   <div className="col-span-2">deleted tweets.</div>
                 </div>
               </div>
+              {numMissed > 0 && (
+                <div className="">
+                  <div className="grid grid-cols-3 gap-2 text-lg">
+                    <span className="text-right font-semibold text-gray-200">
+                      {numMissed}
+                    </span>
+                    <div className="col-span-2">missed tweets.</div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {step === 3 && (
