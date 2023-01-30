@@ -6,7 +6,6 @@ import pLimit from "p-limit";
 import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import LoadingMessage from "../components/loading-message";
-import formatTextContent from "../utils/formatter";
 import fetchTweetStatus from "../utils/fetch";
 import LoadingTweetsOverlay from "../components/loading-tweets-overlay";
 
@@ -24,7 +23,7 @@ export type FullDeletedTweet = {
   handle: string;
 };
 
-const maxConcurrentTwitterRequests = 10;
+const maxConcurrentTwitterRequests = 5;
 const maxConcurrentArchiveRequests = 5;
 const twitterLimit = pLimit(maxConcurrentTwitterRequests);
 const archiveLimit = pLimit(maxConcurrentArchiveRequests);
@@ -109,13 +108,13 @@ const Home: NextPage = () => {
             if (x !== "Server error") {
               setFullDeletedTweet((prev) => [
                 ...prev,
-                formatTextContent({
+                {
                   ...x,
                   url: `https://web.archive.org/web/${
                     deletedTweets[i]!.archiveDate
                   }/${deletedTweets[i]!.url}`,
                   handle: username,
-                }),
+                },
               ]);
             }
           })

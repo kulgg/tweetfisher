@@ -1,5 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { fetchPlus } from "../../../../../utils/fetch";
+import {
+  formatTweetHtml,
+  formatUsername,
+} from "../../../../../utils/formatter";
+import {
+  getAvatarUrl,
+  getContainerHtml,
+  getDate,
+  getTweetHtml,
+  getUsername,
+} from "../../../../../utils/parsers/first-parser";
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,60 +38,47 @@ export default async function handler(
   if (result) {
     let text = await result.text();
 
-    let regex =
-      /<div class="permalink-inner permalink-tweet-container([\s\S]*)/;
-    let match = text.match(regex);
-    if (!match || match[1] === undefined) {
-      console.log("EARLY EXIT - No Text Match", webArchiveUrl);
+    const containerHtml = getContainerHtml(text);
+    if (!containerHtml) {
+      console.log("EARLY EXIT - No Container Html Match", webArchiveUrl);
       return res.status(500).json("Server error");
     }
-    text = match[1];
 
-    let tweet = "";
-    let username = "";
-    let date = "";
-    let imgUrl = "";
-
-    console.log("search", text.search('class="TweetTextSize TweetTextSize--'));
-    regex = /<p class="TweetTextSize TweetTextSize--.+?>([\s\S]+?)<\/p>/;
-    match = text.match(regex);
-    if (!match || !match[1]) {
-      console.log("EARLY EXIT - No Tweet Match", webArchiveUrl);
+    let tweetHtml = getTweetHtml(containerHtml);
+    if (!tweetHtml) {
+      console.log("EARLY EXIT - No Tweet Html Match", webArchiveUrl);
       return res.status(500).json("Server error");
     }
-    tweet = match[1];
-    console.log("tweet", tweet);
 
-    regex = /<strong class="fullname.*?>([\s\S]+?)<\/strong>/;
-    match = text.match(regex);
-    if (!match || !match[1]) {
+    let username = getUsername(containerHtml);
+    if (!username) {
       console.log("EARLY EXIT - No Username Match", webArchiveUrl);
       return res.status(500).json("Server error");
     }
-    username = match[1];
-    console.log("username", username);
 
-    regex = /<span>(\d{1,2}:\d{2} [A|P]M.*?\d{4})<\/span>/;
-    match = text.match(regex);
-    if (!match || !match[1]) {
-      console.log("EARLY EXIT - No Date Match", webArchiveUrl);
+    const date = getDate(containerHtml);
+    if (!date) {
+      console.log("EARLY EXIT - No date found", webArchiveUrl);
       return res.status(500).json("Server error");
     }
-    date = match[1];
-    console.log("date", date);
 
-    regex = /<img class="avatar js-action-profile-avatar" src="(.+?)"/;
-    match = text.match(regex);
-    if (!match || !match[1]) {
-      console.log("EARLY EXIT - No avatar Match", webArchiveUrl);
+    const avatarUrl = getAvatarUrl(containerHtml);
+    if (!avatarUrl) {
+      console.log("EARLY EXIT - No Avatar URL found", webArchiveUrl);
       return res.status(500).json("Server error");
     }
-    imgUrl = match[1];
-    console.log("imgUrl", imgUrl);
+
+    tweetHtml = formatTweetHtml(tweetHtml);
+    username = formatUsername(username);
 
     return res
       .status(200)
-      .json({ tweet: tweet, username: username, date: date, pfp: imgUrl });
+      .json({
+        tweet: tweetHtml,
+        username: username,
+        date: date,
+        pfp: avatarUrl,
+      });
   }
 
   return res.status(500).json("Server error");

@@ -15,8 +15,6 @@ export default async function handler(
     return res.status(400).json("Bad URL");
   }
 
-  console.log("url", url);
-
   const result = await fetch(url, {
     headers: {
       "User-Agent":

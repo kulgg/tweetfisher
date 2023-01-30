@@ -1,31 +1,33 @@
-import { FullDeletedTweet } from "../pages";
-
-function replaceNamedEntities(s: string) {
+const replaceNamedEntities = (s: string): string => {
   s = s.replaceAll("&lt;", "<");
   s = s.replaceAll("&gt;", ">");
   s = s.replaceAll("&quot;", '"');
   s = s.replaceAll("&#39;", "'");
   s = s.replaceAll("&nbsp;", " ");
   return s;
-}
-
-const formatTextContent = (t: FullDeletedTweet): FullDeletedTweet => {
-  const emojiRegex = /<img class="Emoji Emoji--forText".+?alt="(.+?)".+?>/gm;
-  const handleRegex = /<a href=".+?<b>(.+?)<\/b><\/a>/gm;
-  const linkRegex = /<a href=".+?>(.+?)<\/a>/gm;
-  const emojiInUsernameRegex =
-    /<span class="Emoji Emoji--forLinks.+?<span class="visuallyhidden".+?>(.+?)<\/span>/gm;
-  const spanLinkRegex =
-    /<span class="tco-ellipsis"><\/span><span class="invisible">https:\/\/<\/span><span.+?>(.+?)<\/span><span class="invisible">(.+?)<\/span>.+?<\/span>.+?<\/span>/gm;
-
-  t.tweet = t.tweet.replaceAll(emojiRegex, "$1");
-  t.tweet = t.tweet.replaceAll(handleRegex, "@$1");
-  t.tweet = t.tweet.replaceAll(linkRegex, " $1");
-  t.tweet = t.tweet.replaceAll(spanLinkRegex, "$1$2");
-  t.tweet = replaceNamedEntities(t.tweet);
-  t.username = t.username.replaceAll(emojiInUsernameRegex, "$1");
-  t.username = replaceNamedEntities(t.username);
-  return t;
 };
 
-export default formatTextContent;
+const emojiInUsernameRegex =
+  /<span class="Emoji Emoji--forLinks.+?<span class="visuallyhidden".+?>(.+?)<\/span>/gm;
+const emojiRegex = /<img class="Emoji Emoji--forText".+?alt="(.+?)".+?>/gm;
+const handleRegex = /<a href=".+?<b>(.+?)<\/b><\/a>/gm;
+const linkRegex = /<a href=".+?>(.+?)<\/a>/gm;
+const spanLinkRegex =
+  /<span class="tco-ellipsis"><\/span><span class="invisible">https:\/\/<\/span><span.+?>(.+?)<\/span><span class="invisible">(.+?)<\/span>.+?<\/span>.+?<\/span>/gm;
+
+const formatTweetHtml = (tweetHtml: string): string => {
+  tweetHtml = tweetHtml.replaceAll(emojiRegex, "$1");
+  tweetHtml = tweetHtml.replaceAll(handleRegex, "@$1");
+  tweetHtml = tweetHtml.replaceAll(linkRegex, " $1");
+  tweetHtml = tweetHtml.replaceAll(spanLinkRegex, "$1$2");
+  tweetHtml = replaceNamedEntities(tweetHtml);
+  return tweetHtml;
+};
+
+const formatUsername = (u: string): string => {
+  u = u.replaceAll(emojiInUsernameRegex, "$1");
+  u = replaceNamedEntities(u);
+  return u;
+};
+
+export { formatTweetHtml, formatUsername, replaceNamedEntities };
