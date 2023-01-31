@@ -1,10 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { TweetObject } from "../../../../../types/TweetObject";
 import { fetchPlus } from "../../../../../utils/fetch";
-import {
-  formatTweetHtml,
-  formatUsername,
-} from "../../../../../utils/formatter";
+import fs from "fs";
 import firstParser from "../../../../../utils/parsers/first-parser";
 import secondParser from "../../../../../utils/parsers/second-parser";
 
@@ -16,14 +13,14 @@ async function handleResponse(
   const missingFields: string[] = [];
   for (const key in tweetObj) {
     if (tweetObj[key as keyof TweetObject] === "") {
-      missingFields.push(key, url);
+      missingFields.push(key);
     }
   }
   if (missingFields.length > 0) {
-    const msg = `Archive parsing error: ${missingFields.join(
+    const msg = `[${url}]\nArchive parsing error: ${missingFields.join(
       ", "
-    )} could not be parsed`;
-    console.warn(msg);
+    )} could not be parsed\n\n`;
+    fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
     return res.status(500).json(msg);
   }
   return res.status(200).json(tweetObj);
@@ -67,6 +64,9 @@ export default async function handler(
       const tweetObj = secondParser.getTweetObj(containerHtml);
       return handleResponse(res, tweetObj, webArchiveUrl);
     }
+
+    const msg = `[${url}]\nAll parsers failed\n\n`;
+    fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
   }
 
   return res.status(500).json("Server error");

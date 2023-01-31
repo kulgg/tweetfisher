@@ -18,6 +18,7 @@ ToDo
 - [x] Show deleted tweets fetching process
 - [x] Support parsing of Jul 2022 and later version
 - [x] Use throttled queue instead
+- [ ] Add throttle settings PopUp UI
 - [ ] Fix parsing bugs
 - [ ] Support image parsing
 - [ ] Fix Index state mess
