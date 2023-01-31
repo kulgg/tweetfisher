@@ -18,7 +18,7 @@ export type FullDeletedTweet = {
   tweet: string;
   username: string;
   date: string;
-  pfp: string;
+  avatarUrl: string;
   url: string;
   handle: string;
 };

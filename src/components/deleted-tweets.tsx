@@ -12,7 +12,7 @@ function DeletedTweets({ tweets }: { tweets: FullDeletedTweet[] }) {
           text={x.tweet}
           username={x.username}
           created={x.date}
-          pfp={x.pfp}
+          pfp={x.avatarUrl}
           url={x.url}
           handle={x.handle}
         />

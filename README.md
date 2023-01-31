@@ -16,8 +16,9 @@ ToDo
 - [x] Do requests concurrently with ability to set max TPS
 - [x] Fetch deleted tweets parallel to status checking process
 - [x] Show deleted tweets fetching process
+- [x] Support parsing of Jul 2022 and later version
 - [ ] Fix parsing bugs
-- [ ] Support parsing of Jul 2022 and later version
+- [ ] Support image parsing
 - [ ] Fix Index state mess
 
 document.querySelectorAll("img[data-aria-label-part]")

@@ -1,16 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { TweetObject } from "../../../../../types/TweetObject";
 import { fetchPlus } from "../../../../../utils/fetch";
 import {
   formatTweetHtml,
   formatUsername,
 } from "../../../../../utils/formatter";
-import {
-  getAvatarUrl,
-  getContainerHtml,
-  getDate,
-  getTweetHtml,
-  getUsername,
-} from "../../../../../utils/parsers/first-parser";
+import firstParser from "../../../../../utils/parsers/first-parser";
+import secondParser from "../../../../../utils/parsers/second-parser";
+
+async function handleResponse(
+  res: NextApiResponse,
+  tweetObj: TweetObject,
+  url: string
+) {
+  const missingFields: string[] = [];
+  for (const key in tweetObj) {
+    if (tweetObj[key as keyof TweetObject] === "") {
+      missingFields.push(key, url);
+    }
+  }
+  if (missingFields.length > 0) {
+    const msg = `Archive parsing error: ${missingFields.join(
+      ", "
+    )} could not be parsed`;
+    console.warn(msg);
+    return res.status(500).json(msg);
+  }
+  return res.status(200).json(tweetObj);
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -38,47 +55,18 @@ export default async function handler(
   if (result) {
     let text = await result.text();
 
-    const containerHtml = getContainerHtml(text);
-    if (!containerHtml) {
-      console.log("EARLY EXIT - No Container Html Match", webArchiveUrl);
-      return res.status(500).json("Server error");
+    let containerHtml = firstParser.getContainerHtml(text);
+    if (containerHtml !== "") {
+      const tweetObj = firstParser.getTweetObj(containerHtml);
+      return handleResponse(res, tweetObj, webArchiveUrl);
     }
+    console.log("First Parser failed");
 
-    let tweetHtml = getTweetHtml(containerHtml);
-    if (!tweetHtml) {
-      console.log("EARLY EXIT - No Tweet Html Match", webArchiveUrl);
-      return res.status(500).json("Server error");
+    containerHtml = secondParser.getContainerHtml(text);
+    if (containerHtml !== "") {
+      const tweetObj = secondParser.getTweetObj(containerHtml);
+      return handleResponse(res, tweetObj, webArchiveUrl);
     }
-
-    let username = getUsername(containerHtml);
-    if (!username) {
-      console.log("EARLY EXIT - No Username Match", webArchiveUrl);
-      return res.status(500).json("Server error");
-    }
-
-    const date = getDate(containerHtml);
-    if (!date) {
-      console.log("EARLY EXIT - No date found", webArchiveUrl);
-      return res.status(500).json("Server error");
-    }
-
-    const avatarUrl = getAvatarUrl(containerHtml);
-    if (!avatarUrl) {
-      console.log("EARLY EXIT - No Avatar URL found", webArchiveUrl);
-      return res.status(500).json("Server error");
-    }
-
-    tweetHtml = formatTweetHtml(tweetHtml);
-    username = formatUsername(username);
-
-    return res
-      .status(200)
-      .json({
-        tweet: tweetHtml,
-        username: username,
-        date: date,
-        pfp: avatarUrl,
-      });
   }
 
   return res.status(500).json("Server error");
