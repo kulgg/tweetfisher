@@ -1,3 +1,4 @@
+import throttledQueue from "throttled-queue";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { type NextPage } from "next";
@@ -23,10 +24,8 @@ export type FullDeletedTweet = {
   handle: string;
 };
 
-const maxConcurrentTwitterRequests = 5;
-const maxConcurrentArchiveRequests = 5;
-const twitterLimit = pLimit(maxConcurrentTwitterRequests);
-const archiveLimit = pLimit(maxConcurrentArchiveRequests);
+const twitterRequestQueue = throttledQueue(3, 1000, true);
+const archiveRequestQueue = throttledQueue(3, 1000, true);
 
 const Home: NextPage = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -50,7 +49,7 @@ const Home: NextPage = () => {
     onSuccess: (data) => {
       setStep(2);
       for (let i = 0; i < data.length; i++) {
-        twitterLimit(() =>
+        twitterRequestQueue(() =>
           fetchTweetStatus(data[i].url).then((x) => {
             if (x === 404) {
               setDeletedTweets((prev) => [...prev, data[i]]);
@@ -97,7 +96,7 @@ const Home: NextPage = () => {
       }
       console.log("Fetching", deletedTweets[i]!.url);
       setFetchedUrls((prev) => [...prev, deletedTweets[i]!.url]);
-      archiveLimit(() =>
+      archiveRequestQueue(() =>
         fetch(
           `/api/archive/tweet/${
             deletedTweets[i]!.archiveDate

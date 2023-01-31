@@ -17,6 +17,7 @@ ToDo
 - [x] Fetch deleted tweets parallel to status checking process
 - [x] Show deleted tweets fetching process
 - [x] Support parsing of Jul 2022 and later version
+- [x] Use throttled queue instead
 - [ ] Fix parsing bugs
 - [ ] Support image parsing
 - [ ] Fix Index state mess
