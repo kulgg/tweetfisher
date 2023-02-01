@@ -29,11 +29,11 @@ function ArchivedTweet({
   const fallbackPfp = "/anon.png";
 
   let replyToMessage = "";
-  let replyToHandle = "";
+  let replyToHandles: string[] = [];
 
   if (replyTo) {
+    replyToHandles = replyTo.split(" ").filter((x) => x.startsWith("@"));
     const indexOfAt = replyTo.indexOf("@");
-    replyToHandle = replyTo.substring(indexOfAt);
     replyToMessage = replyTo.substring(0, indexOfAt);
   }
 
@@ -74,7 +74,16 @@ function ArchivedTweet({
       {replyTo && (
         <div className="mt-3 ml-1 text-gray-500">
           {replyToMessage}{" "}
-          <span className="text-[#1d9bf0]">{replyToHandle}</span>
+          {replyToHandles.map((handle) => (
+            <span>
+              <a
+                href={`https://twitter.com/${handle.substring(1)}`}
+                className="text-[#1d9bf0]"
+              >
+                {handle}
+              </a>{" "}
+            </span>
+          ))}
         </div>
       )}
       <div className="my-3 whitespace-pre-line text-xl sm:my-4 sm:text-2xl">
@@ -86,7 +95,12 @@ function ArchivedTweet({
         }`}
       >
         {imageUrls.map((url) => (
-          <img key={url} src={url} alt="image" className="rounded-3xl" />
+          <img
+            key={url}
+            src={url}
+            alt="image"
+            className="max-h-96 rounded-3xl"
+          />
         ))}
       </div>
       <div className="text-[15px] text-neutral-500 sm:text-base">{created}</div>
