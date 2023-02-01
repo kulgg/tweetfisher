@@ -3,7 +3,7 @@ import { TweetObject } from "../../types/TweetObject";
 import { formatTweetHtml, formatUsername } from "../formatter";
 // Past July 2022
 
-export const DateRegex = /<span.+?>(\d{1,2}:\d{2}.+?)<\/span>/gm;
+export const DateRegex = /<span.+?>(\d{1,2}:\d{2}.+?)<\/span>/;
 
 const getContainerHtml = (html: string): string => {
   const $ = cheerio.load(html);

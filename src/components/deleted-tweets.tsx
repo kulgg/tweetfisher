@@ -4,8 +4,7 @@ import ArchivedTweet from "./tweet";
 
 function DeletedTweets({ tweets }: { tweets: FullDeletedTweet[] }) {
   return (
-    <div className="my-10 flex w-full flex-col items-center gap-4">
-      <div className="border-t border-gray-600"></div>
+    <div className="my-10 grid w-full grid-flow-dense grid-cols-1 items-center gap-4">
       {tweets.map((x) => (
         <ArchivedTweet
           key={x.url}

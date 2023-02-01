@@ -101,6 +101,7 @@ const Home: NextPage = () => {
     setDeletedTweets([]);
     setFullDeletedTweet([]);
     setMissedTweets([]);
+    setFetchedUrls([]);
     setNumFetched(0);
   };
 
@@ -267,14 +268,12 @@ const Home: NextPage = () => {
             </div>
           )}
           {step >= 2 && <DeletedTweets tweets={fullDeletedTweet} />}
-          {step >= 2 &&
-            step < 4 &&
-            fullDeletedTweet.length < deletedTweets.length && (
-              <LoadingTweetsOverlay
-                numLoaded={fullDeletedTweet.length}
-                total={deletedTweets.length}
-              />
-            )}
+          {step >= 2 && fullDeletedTweet.length < deletedTweets.length && (
+            <LoadingTweetsOverlay
+              numLoaded={fullDeletedTweet.length}
+              total={deletedTweets.length}
+            />
+          )}
         </div>
       </main>
     </>

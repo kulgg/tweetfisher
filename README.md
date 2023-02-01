@@ -18,9 +18,9 @@ ToDo
 - [x] Show deleted tweets fetching process
 - [x] Support parsing of Jul 2022 and later version
 - [x] Use throttled queue instead
+- [x] Fix emojs in tweets
+- [ ] Support image parsing
+- [ ] Support "replies to"
 - [ ] Add throttle settings PopUp UI
 - [ ] Fix parsing bugs
-- [ ] Support image parsing
 - [ ] Fix Index state mess
-
-document.querySelectorAll("img[data-aria-label-part]")

@@ -25,7 +25,7 @@ function ArchivedTweet({
   const fallbackPfp = "/anon.png";
 
   return (
-    <div className="w-full border-b border-gray-700 sm:w-[598px]">
+    <div className="w-full overflow-x-hidden border-b border-gray-700">
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
           <div>
