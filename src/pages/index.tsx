@@ -21,6 +21,8 @@ export type FullDeletedTweet = {
   avatarUrl: string;
   url: string;
   handle: string;
+  replyTo: string | null;
+  imageUrls: string[];
 };
 
 const twitterRequestQueue = throttledQueue(1, 1000, true);

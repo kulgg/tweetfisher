@@ -14,6 +14,8 @@ function DeletedTweets({ tweets }: { tweets: FullDeletedTweet[] }) {
           pfp={x.avatarUrl}
           url={x.url}
           handle={x.handle}
+          replyTo={x.replyTo}
+          imageUrls={x.imageUrls}
         />
       ))}
     </div>

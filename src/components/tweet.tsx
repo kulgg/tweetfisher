@@ -10,6 +10,8 @@ export type TweetProps = {
   handle: string;
   username: string;
   created: string;
+  imageUrls: string[];
+  replyTo: string | null;
 };
 
 function ArchivedTweet({
@@ -19,10 +21,21 @@ function ArchivedTweet({
   handle,
   username,
   created,
+  imageUrls,
+  replyTo,
 }: TweetProps) {
   const [pfpUrl, setPfpUrl] = useState(pfp);
 
   const fallbackPfp = "/anon.png";
+
+  let replyToMessage = "";
+  let replyToHandle = "";
+
+  if (replyTo) {
+    const indexOfAt = replyTo.indexOf("@");
+    replyToHandle = replyTo.substring(indexOfAt);
+    replyToMessage = replyTo.substring(0, indexOfAt);
+  }
 
   return (
     <div className="w-full overflow-x-hidden border-b border-gray-700">
@@ -58,8 +71,23 @@ function ArchivedTweet({
           </a>
         </div>
       </div>
-      <div className="my-3 whitespace-pre-line text-xl sm:my-6 sm:text-2xl">
+      {replyTo && (
+        <div className="mt-3 ml-1 text-gray-500">
+          {replyToMessage}{" "}
+          <span className="text-[#1d9bf0]">{replyToHandle}</span>
+        </div>
+      )}
+      <div className="my-3 whitespace-pre-line text-xl sm:my-4 sm:text-2xl">
         {text}
+      </div>
+      <div
+        className={`grid ${
+          imageUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"
+        }`}
+      >
+        {imageUrls.map((url) => (
+          <img key={url} src={url} alt="image" className="rounded-3xl" />
+        ))}
       </div>
       <div className="text-[15px] text-neutral-500 sm:text-base">{created}</div>
       <div className="my-3 sm:my-6"></div>
