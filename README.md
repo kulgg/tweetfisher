@@ -19,8 +19,9 @@ ToDo
 - [x] Support parsing of Jul 2022 and later version
 - [x] Use throttled queue instead
 - [x] Fix emojs in tweets
-- [ ] Support image parsing
-- [ ] Support "replies to"
+- [x] Support image parsing
+- [x] Support "replies to"
+- [x] Fix parsing bugs
 - [ ] Add throttle settings PopUp UI
-- [ ] Fix parsing bugs
 - [ ] Fix Index state mess
+- [ ] Validate that urls are of an actual status

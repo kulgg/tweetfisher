@@ -61,12 +61,25 @@ const getReplyTo = (html: string): string | null => {
   return replyToContext.text().trim();
 };
 
+const getImageUrls = (html: string): string[] => {
+  const $ = cheerio.load(html);
+  const imageUrls = $("div.AdaptiveMediaOuterContainer")
+    .find("img")
+    .map((i, elem) => {
+      return $(elem).attr("src");
+    })
+    .get();
+
+  return imageUrls;
+};
+
 const getTweetObj = (containerHtml: string): TweetObject => {
   let tweetHtml = getTweetHtml(containerHtml);
   let username = getUsername(containerHtml);
   const date = getDate(containerHtml);
   const avatarUrl = getAvatarUrl(containerHtml);
   const replyTo = getReplyTo(containerHtml);
+  const imageUrls = getImageUrls(containerHtml);
 
   tweetHtml = formatTweetHtml(tweetHtml);
   username = formatUsername(username);
@@ -77,6 +90,7 @@ const getTweetObj = (containerHtml: string): TweetObject => {
     date: date,
     avatarUrl: avatarUrl,
     replyTo: replyTo,
+    imageUrls: imageUrls,
   };
 };
 

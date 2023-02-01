@@ -4,4 +4,5 @@ export type TweetObject = {
   date: string;
   avatarUrl: string;
   replyTo: string | null;
+  imageUrls: string[];
 };

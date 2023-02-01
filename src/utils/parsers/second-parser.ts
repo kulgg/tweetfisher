@@ -19,10 +19,25 @@ const getTweetHtml = (html: string): string => {
 
 const getUsername = (html: string): string => {
   const $ = cheerio.load(html);
-  const usernameContainer = $(
-    'div[data-testid="User-Names"] > div > div'
-  ).first();
-  return usernameContainer?.text() ?? "";
+  const userNameParts = $(
+    'div[data-testid="User-Names"] > div > div > a > div > div > span'
+  )
+    .children()
+    .map((i, elem) => {
+      if (elem.type === "text") {
+        return elem.data;
+      }
+      if (elem.type === "tag") {
+        if (elem.name === "img") {
+          return $(elem).attr("alt");
+        }
+        return $(elem).text();
+      }
+      return "";
+    })
+    .get();
+
+  return userNameParts.join("");
 };
 
 const getDate = (html: string): string => {
@@ -61,12 +76,24 @@ const getReplyTo = (html: string): string | null => {
   return replyToContainer.text();
 };
 
+const getImageUrls = (html: string): string[] => {
+  const $ = cheerio.load(html);
+  const imageUrls = $('img[alt="Image"]')
+    .map((i, elem) => {
+      return $(elem).attr("src");
+    })
+    .get();
+
+  return imageUrls;
+};
+
 const getTweetObj = (containerHtml: string): TweetObject => {
   let tweetHtml = getTweetHtml(containerHtml);
   let username = getUsername(containerHtml);
   const date = getDate(containerHtml);
   const avatarUrl = getAvatarUrl(containerHtml);
   const replyTo = getReplyTo(containerHtml);
+  const imageUrls = getImageUrls(containerHtml);
 
   tweetHtml = formatTweetHtml(tweetHtml);
   username = formatUsername(username);
@@ -77,6 +104,7 @@ const getTweetObj = (containerHtml: string): TweetObject => {
     date: date,
     avatarUrl: avatarUrl,
     replyTo: replyTo,
+    imageUrls: imageUrls,
   };
 };
 
