@@ -3,4 +3,5 @@ export type TweetObject = {
   username: string;
   date: string;
   avatarUrl: string;
+  replyTo: string | null;
 };
