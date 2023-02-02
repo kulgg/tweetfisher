@@ -12,6 +12,7 @@ import UsernameForm from "../components/username-form";
 import StickyHeader from "../components/sticky-header";
 import useScroll from "../lib/hooks/use-scroll";
 import ScrollToTop from "../components/scroll-to-top";
+import FadeUpContainer from "../components/fade-up-container";
 
 type DeletedTweet = {
   archiveDate: string;
@@ -193,15 +194,19 @@ const Home: NextPage = () => {
       )}
       <main className="flex min-h-screen flex-col overflow-x-hidden px-2 sm:px-0">
         <div className="container mx-auto flex flex-col items-center">
-          <h1 className="my-4 mr-auto bg-gradient-to-r from-emerald-200 to-rose-200 bg-clip-text text-[39px] font-bold text-transparent sm:my-10 sm:text-7xl">
-            Find Deleted Tweets
-          </h1>
+          <FadeUpContainer delay={0.01} duration={0.5}>
+            <h1 className="my-4 mr-auto bg-gradient-to-r from-emerald-200 to-rose-200 bg-clip-text text-[39px] font-bold text-transparent sm:my-10 sm:text-7xl">
+              Find Deleted Tweets
+            </h1>
+          </FadeUpContainer>
           <div className="w-full">
-            <UsernameForm
-              handleChange={handleUsernameChange}
-              handleSubmit={handleSubmit}
-              username={usernameInput}
-            />
+            <FadeUpContainer delay={0.02} duration={0.5}>
+              <UsernameForm
+                handleChange={handleUsernameChange}
+                handleSubmit={handleSubmit}
+                username={usernameInput}
+              />
+            </FadeUpContainer>
           </div>
           <div className="mt-6"></div>
           {username && (
@@ -229,7 +234,7 @@ const Home: NextPage = () => {
                 </div>
               </div>
               {missedTweets.length > 0 && (
-                <div className="" ref={tweetsContainer}>
+                <div className="">
                   <div className="grid grid-cols-3 gap-2 text-lg">
                     <span className="text-right font-semibold text-gray-200">
                       {missedTweets.length}
