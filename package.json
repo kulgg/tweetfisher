@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@formkit/auto-animate": "^1.0.0-beta.6",
+    "@headlessui/react": "^1.7.8",
+    "@heroicons/react": "^2.0.14",
     "@ramonak/react-progress-bar": "^5.0.3",
     "@tailwindcss/forms": "^0.5.3",
     "@tanstack/react-query": "^4.22.4",
