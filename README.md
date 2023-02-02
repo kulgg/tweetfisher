@@ -22,6 +22,9 @@ ToDo
 - [x] Support image parsing
 - [x] Support "replies to"
 - [x] Fix parsing bugs
+- [x] Add scrollup button
+- [x] Add popon header
+- [ ] Check if account is active or not
 - [ ] Add throttle settings PopUp UI
 - [ ] Fix Index state mess
 - [ ] Validate that urls are of an actual status
