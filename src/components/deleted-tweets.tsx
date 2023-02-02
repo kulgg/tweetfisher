@@ -1,10 +1,20 @@
 import React from "react";
 import { FullDeletedTweet } from "../pages";
 import ArchivedTweet from "./tweet";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-function DeletedTweets({ tweets }: { tweets: FullDeletedTweet[] }) {
+export default function DeletedTweets({
+  tweets,
+}: {
+  tweets: FullDeletedTweet[];
+}) {
+  const [tweetsContainer] = useAutoAnimate<HTMLDivElement>({ duration: 300 });
+
   return (
-    <div className="my-10 grid w-full grid-flow-dense grid-cols-1 items-center gap-4">
+    <div
+      className="my-10 grid w-full grid-flow-dense grid-cols-1 items-center gap-4"
+      ref={tweetsContainer}
+    >
       {tweets.map((x) => (
         <ArchivedTweet
           key={x.url}
@@ -21,5 +31,3 @@ function DeletedTweets({ tweets }: { tweets: FullDeletedTweet[] }) {
     </div>
   );
 }
-
-export default DeletedTweets;

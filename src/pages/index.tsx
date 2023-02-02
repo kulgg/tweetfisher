@@ -229,7 +229,7 @@ const Home: NextPage = () => {
                 </div>
               </div>
               {missedTweets.length > 0 && (
-                <div className="">
+                <div className="" ref={tweetsContainer}>
                   <div className="grid grid-cols-3 gap-2 text-lg">
                     <span className="text-right font-semibold text-gray-200">
                       {missedTweets.length}
@@ -283,6 +283,7 @@ const Home: NextPage = () => {
             />
           )}
         </div>
+        <div className="my-32"></div>
       </main>
       {isScrollToTopVisible && <ScrollToTop />}
     </>
