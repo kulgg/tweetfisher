@@ -11,7 +11,7 @@ function Layout({ children }: LayoutProps) {
     <>
       <Meta />
       <Header />
-      <main className="flex min-h-screen flex-col overflow-x-hidden px-2 pt-32 font-default sm:px-0">
+      <main className="container mx-auto flex min-h-screen flex-col overflow-x-hidden px-2 py-32 font-default sm:px-0">
         {children}
       </main>
     </>
