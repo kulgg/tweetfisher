@@ -1,24 +1,38 @@
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import React from "react";
+import GrayButton from "./ui/buttons/gray-button";
 
 export type UsernameFormProps = {
   username: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleSettingsClick: () => void;
 };
 
 function UsernameForm({
   username,
   handleChange,
   handleSubmit,
+  handleSettingsClick,
 }: UsernameFormProps) {
   return (
     <form onSubmit={handleSubmit} className="relative">
-      <label
-        htmlFor="search"
-        className="block text-lg font-medium text-indigo-200"
-      >
-        Enter a username
-      </label>
+      <div className="flex items-center justify-between pr-1">
+        <label
+          htmlFor="search"
+          className="block text-lg font-medium text-indigo-200"
+        >
+          Enter a username
+        </label>
+        <div className="mb-1">
+          <GrayButton handleClick={handleSettingsClick}>
+            <div className="mt-[1px] w-5">
+              <Cog6ToothIcon />
+            </div>
+            <div>Settings</div>
+          </GrayButton>
+        </div>
+      </div>
       <input
         type="text"
         name="search"

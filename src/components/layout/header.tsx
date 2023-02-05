@@ -10,7 +10,7 @@ function Header() {
       className={`fixed top-0 w-full ${
         scrolled
           ? "border-b border-gray-700 bg-gray-800/50 backdrop-blur-xl"
-          : "border-b border-gray-900 bg-white/0"
+          : "border-b border-gray-900 bg-black"
       } z-30 transition-all`}
     >
       <div className="mx-5 flex h-16 max-w-6xl items-center justify-between xl:mx-auto">

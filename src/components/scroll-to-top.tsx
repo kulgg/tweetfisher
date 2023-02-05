@@ -2,7 +2,7 @@ import React from "react";
 
 function ScrollToTop() {
   return (
-    <div className="sticky bottom-6">
+    <div className="sticky bottom-6 z-30">
       <div className="mx-4 flex justify-end sm:mx-40">
         <div
           onClick={() => scrollTo({ top: 0, left: 0, behavior: "smooth" })}

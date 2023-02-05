@@ -8,15 +8,15 @@ export default function DeletedTweets({
 }: {
   tweets: FullDeletedTweet[];
 }) {
-  const [tweetsContainer] = useAutoAnimate<HTMLDivElement>({
-    duration: 100,
-    easing: "ease-out",
-  });
+  // const [tweetsContainer] = useAutoAnimate<HTMLDivElement>({
+  //   duration: 100,
+  //   easing: "ease-out",
+  // });
 
   return (
     <div
       className="my-10 grid w-full grid-flow-dense grid-cols-1 items-center gap-4"
-      ref={tweetsContainer}
+      // ref={tweetsContainer}
     >
       {tweets.map((x) => (
         <ArchivedTweet

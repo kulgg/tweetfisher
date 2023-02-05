@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { setDefaultResultOrder } from "dns/promises";
 import { formatDate } from "../utils/date";
+import { motion, useAnimation, useInView } from "framer-motion";
+import { FADE_DOWN_ANIMATION } from "../lib/animations";
 
 export type TweetProps = {
   pfp: string;
@@ -38,7 +40,13 @@ function ArchivedTweet({
   }
 
   return (
-    <div className="w-full overflow-x-hidden border-b border-gray-700">
+    <motion.div
+      className="w-full overflow-x-hidden border-b border-gray-700"
+      variants={FADE_DOWN_ANIMATION}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true }}
+    >
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
           <div>
@@ -105,7 +113,7 @@ function ArchivedTweet({
       </div>
       <div className="text-[15px] text-neutral-500 sm:text-base">{created}</div>
       <div className="my-3 sm:my-6"></div>
-    </div>
+    </motion.div>
   );
 }
 
