@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
-import useScroll from "../lib/hooks/use-scroll";
+import useScroll from "../../lib/hooks/use-scroll";
 
 function Header() {
   const scrolled = useScroll(50);
