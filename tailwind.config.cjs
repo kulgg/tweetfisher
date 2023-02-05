@@ -3,6 +3,10 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        display: ["var(--font-clash)"],
+        default: ["var(--font-inter)", "system-ui", "sans-serif"],
+      },
       container: {
         screens: {
           sm: "100%",
