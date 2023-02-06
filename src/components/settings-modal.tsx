@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 export type SettingsModalProps = {
   isVisible: boolean;
@@ -19,6 +19,17 @@ export default function SettingsModal({
   const [twitterTpsInput, setTwitterTpsInput] = useState(twitterTps.toString());
   const [archiveTpsInput, setArchiveTpsInput] = useState(archiveTps.toString());
   const cancelButtonRef = useRef(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setTwitterTpsInput(twitterTps.toString());
+      setArchiveTpsInput(archiveTps.toString());
+    }, 150);
+
+    return () => {
+      clearTimeout(t);
+    };
+  }, [isVisible]);
 
   return (
     <Transition.Root show={isVisible} as={Fragment}>
