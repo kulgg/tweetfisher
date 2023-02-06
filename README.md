@@ -25,7 +25,7 @@ ToDo
 - [x] Add scrollup button
 - [x] Add popon header
 - [x] Add throttle settings PopUp UI
-- [ ] Finish sticky header
+- [x] Finish sticky header
 - [ ] Queues should instantly use updated TPS values
 - [ ] Add tooltips in settings
 - [ ] Check if account is active or not

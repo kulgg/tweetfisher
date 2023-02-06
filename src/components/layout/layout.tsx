@@ -1,14 +1,16 @@
 import React from "react";
 import useScroll from "../../lib/hooks/use-scroll";
+import StickyFooter from "./sticky-footer";
 import ScrollToTop from "../scroll-to-top";
-import Header from "./header";
+import Header from "./sticky-header";
 import Meta from "./meta";
 
 export type LayoutProps = {
   children: React.ReactNode;
+  progressBar: JSX.Element;
 };
 
-function Layout({ children }: LayoutProps) {
+function Layout({ children, progressBar }: LayoutProps) {
   const isScrollToTopVisible = useScroll(1500);
 
   return (

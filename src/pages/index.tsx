@@ -7,9 +7,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import LoadingMessage from "../components/loading-message";
 import fetchTweetStatus from "../utils/fetch";
-import LoadingTweetsOverlay from "../components/loading-tweets-overlay";
+import StickyFooter from "../components/layout/sticky-footer";
 import UsernameForm from "../components/username-form";
-import StickyHeader from "../components/sticky-header";
+import FetchProgressBar from "../components/fetch-progress-bar";
 import useScroll from "../lib/hooks/use-scroll";
 import ScrollToTop from "../components/scroll-to-top";
 import FadeUpContainer from "../components/fade-up-container";
@@ -18,7 +18,7 @@ import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import Image from "next/image";
-import Header from "../components/layout/header";
+import Header from "../components/layout/sticky-header";
 import Layout from "../components/layout/layout";
 import { motion } from "framer-motion";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
@@ -212,7 +212,19 @@ const Home: NextPage = () => {
   const isHeaderVisible = useScroll(400);
 
   return (
-    <Layout>
+    <Layout
+      progressBar={
+        step === 2 ? (
+          <FetchProgressBar
+            numFetched={numFetched}
+            numTotal={archiveQuery.data?.length}
+            numMissed={missedTweets.length}
+          />
+        ) : (
+          <div></div>
+        )
+      }
+    >
       {/* {step === 2 && isHeaderVisible && (
         <StickyHeader
           numFetched={numFetched}
@@ -314,7 +326,7 @@ const Home: NextPage = () => {
             )}
           </div>
         )}
-        {step === 2 && (
+        {/* {step === 2 && (
           <div className="my-7 w-full">
             <LoadingMessage message="Checking for deleted tweets" />
             <div className="my-2"></div>
@@ -327,15 +339,20 @@ const Home: NextPage = () => {
               isLabelVisible={false}
             />
           </div>
-        )}
+        )} */}
         {step >= 2 && <DeletedTweets tweets={fullDeletedTweet} />}
-        {step >= 2 && fullDeletedTweet.length < deletedTweets.length && (
-          <LoadingTweetsOverlay
-            numLoaded={fullDeletedTweet.length}
-            total={deletedTweets.length}
-          />
-        )}
       </div>
+      {step >= 2 && (
+        <StickyFooter
+          numLoadedDeletedTweets={fullDeletedTweet.length}
+          numTotalDeletedTweets={deletedTweets.length}
+          numArchivedTweets={archiveQuery.data?.length}
+          numFetchedTweetStati={numFetched}
+          numMissedTweetStati={missedTweets.length}
+          handle={username}
+          handleSettingsClick={() => setIsSettingsModalVisible(true)}
+        />
+      )}
       <SettingsModal
         isVisible={isSettingsModalVisible}
         setIsVisible={setIsSettingsModalVisible}
