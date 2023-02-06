@@ -28,7 +28,7 @@ ToDo
 - [x] Add popon header
 - [x] Add throttle settings PopUp UI
 - [x] Finish sticky header
-- [ ] Validate that urls are of an actual status
+- [x] Validate that urls are of an actual status
 - [ ] Fix Index state mess
 - [ ] Queues should instantly use updated TPS values
 - [ ] Check if account is active or not

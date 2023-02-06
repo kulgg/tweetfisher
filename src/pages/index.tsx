@@ -14,6 +14,7 @@ import UsernameForm from "../components/username-form";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
 import useScroll from "../lib/hooks/use-scroll";
 import fetchTweetStatus from "../utils/fetch";
+import isValidTweetStatusUrl from "../utils/validators";
 
 type DeletedTweet = {
   archiveDate: string;
@@ -62,6 +63,9 @@ const Home: NextPage = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
+  const [validArchivedTweets, setValidArchivedTweets] = useState<
+    DeletedTweet[]
+  >([]);
   const [deletedTweets, setDeletedTweets] = useState<DeletedTweet[]>([]);
   const [missedTweets, setMissedTweets] = useState<DeletedTweet[]>([]);
   const [numFetched, setNumFetched] = useState(0);
@@ -121,12 +125,17 @@ const Home: NextPage = () => {
     enabled: false,
     onSuccess: (data) => {
       setStep(2);
-      fetchTweetStati(data);
+      const validArchivedTweets = data.filter((x: DeletedTweet) =>
+        isValidTweetStatusUrl(x.url)
+      );
+      setValidArchivedTweets([...validArchivedTweets]);
+      fetchTweetStati(validArchivedTweets);
     },
   });
 
   console.log(usernameInput);
   console.log("data", archiveQuery.data);
+  console.log("valid", validArchivedTweets);
   console.log("deleted", deletedTweets);
   console.log("fullDeleted", fullDeletedTweet);
   console.log("step", step);
@@ -136,6 +145,7 @@ const Home: NextPage = () => {
     setStep(1);
     setDeletedTweets([]);
     setFullDeletedTweet([]);
+    setValidArchivedTweets([]);
     setMissedTweets([]);
     setFetchedUrls([]);
     setNumFetched(0);
@@ -186,14 +196,14 @@ const Home: NextPage = () => {
     step !== 3 &&
     step !== 4 &&
     archiveQuery.data &&
-    numFetched === archiveQuery.data.length
+    numFetched === validArchivedTweets.length
   ) {
     setStep(3);
   }
   if (
     step !== 4 &&
     archiveQuery.data &&
-    numFetched === archiveQuery.data.length &&
+    numFetched === validArchivedTweets.length &&
     fullDeletedTweet.length === deletedTweets.length
   ) {
     setStep(4);
@@ -207,7 +217,7 @@ const Home: NextPage = () => {
         step === 2 ? (
           <FetchProgressBar
             numFetched={numFetched}
-            numTotal={archiveQuery.data?.length}
+            numTotal={validArchivedTweets.length}
             numMissed={missedTweets.length}
           />
         ) : (
@@ -264,7 +274,7 @@ const Home: NextPage = () => {
           <div className="">
             <div className="grid grid-cols-3 gap-2 text-lg">
               <span className="text-right font-semibold text-emerald-200">
-                {archiveQuery.data.length}
+                {validArchivedTweets.length}
               </span>
               <div className="col-span-2">archived tweets.</div>
             </div>
@@ -315,7 +325,7 @@ const Home: NextPage = () => {
         <StickyFooter
           numLoadedDeletedTweets={fullDeletedTweet.length}
           numTotalDeletedTweets={deletedTweets.length}
-          numArchivedTweets={archiveQuery.data?.length}
+          numArchivedTweets={validArchivedTweets.length}
           numFetchedTweetStati={numFetched}
           numMissedTweetStati={missedTweets.length}
           handle={username}
