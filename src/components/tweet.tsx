@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import { setDefaultResultOrder } from "dns/promises";
-import { formatDate } from "../utils/date";
-import { motion, useAnimation, useInView } from "framer-motion";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
 
 export type TweetProps = {

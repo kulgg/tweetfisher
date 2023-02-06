@@ -1,9 +1,8 @@
 import React from "react";
 import useScroll from "../../lib/hooks/use-scroll";
-import StickyFooter from "./sticky-footer";
 import ScrollToTop from "../scroll-to-top";
-import Header from "./sticky-header";
 import Meta from "./meta";
+import Header from "./sticky-header";
 
 export type LayoutProps = {
   children: React.ReactNode;

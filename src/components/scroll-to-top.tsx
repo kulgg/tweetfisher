@@ -1,5 +1,3 @@
-import React from "react";
-
 function ScrollToTop() {
   return (
     <div className="sticky bottom-16 z-30">

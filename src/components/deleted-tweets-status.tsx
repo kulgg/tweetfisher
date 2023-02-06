@@ -1,4 +1,3 @@
-import React from "react";
 import LoadingSpin from "./loading-spin";
 
 export type LoadingTweetsOverlayProps = {

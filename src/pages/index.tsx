@@ -1,29 +1,19 @@
-import throttledQueue from "throttled-queue";
-import ProgressBar from "@ramonak/react-progress-bar";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { type NextPage } from "next";
-import Head from "next/head";
-import React, { useCallback, useEffect, useState } from "react";
-import DeletedTweets from "../components/deleted-tweets";
-import LoadingMessage from "../components/loading-message";
-import fetchTweetStatus from "../utils/fetch";
-import StickyFooter from "../components/layout/sticky-footer";
-import UsernameForm from "../components/username-form";
-import FetchProgressBar from "../components/fetch-progress-bar";
-import useScroll from "../lib/hooks/use-scroll";
-import ScrollToTop from "../components/scroll-to-top";
-import FadeUpContainer from "../components/fade-up-container";
-import SettingsModal from "../components/settings-modal";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import { StarIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
-import Image from "next/image";
-import Header from "../components/layout/sticky-header";
-import Layout from "../components/layout/layout";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { FADE_DOWN_ANIMATION } from "../lib/animations";
+import { type NextPage } from "next";
+import React, { useCallback, useEffect, useState } from "react";
+import throttledQueue from "throttled-queue";
+import DeletedTweets from "../components/deleted-tweets";
+import FetchProgressBar from "../components/fetch-progress-bar";
+import Layout from "../components/layout/layout";
+import StickyFooter from "../components/layout/sticky-footer";
+import LoadingMessage from "../components/loading-message";
+import SettingsModal from "../components/settings-modal";
 import StarOnGithubButton from "../components/ui/buttons/star-github";
-import GrayButton from "../components/ui/buttons/gray-button";
+import UsernameForm from "../components/username-form";
+import { FADE_DOWN_ANIMATION } from "../lib/animations";
+import useScroll from "../lib/hooks/use-scroll";
+import fetchTweetStatus from "../utils/fetch";
 
 type DeletedTweet = {
   archiveDate: string;
@@ -225,13 +215,6 @@ const Home: NextPage = () => {
         )
       }
     >
-      {/* {step === 2 && isHeaderVisible && (
-        <StickyHeader
-          numFetched={numFetched}
-          numTotal={archiveQuery.data?.length}
-          numMissed={missedTweets.length}
-        />
-      )} */}
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -268,7 +251,7 @@ const Home: NextPage = () => {
         </motion.div>
       </motion.div>
       <div className="flex flex-col items-center">
-        <div className="mt-6"></div>
+        <div className="mt-16"></div>
         {username && (
           <div className="mb-3 mr-auto rounded-lg bg-gray-800 py-1 px-2 text-lg text-zinc-300">
             @{username}
@@ -326,20 +309,6 @@ const Home: NextPage = () => {
             )}
           </div>
         )}
-        {/* {step === 2 && (
-          <div className="my-7 w-full">
-            <LoadingMessage message="Checking for deleted tweets" />
-            <div className="my-2"></div>
-            <ProgressBar
-              completed={numFetched}
-              maxCompleted={archiveQuery.data?.length}
-              className="w-full rounded-full border border-gray-400"
-              bgColor="#a7f3d0"
-              baseBgColor="#374151"
-              isLabelVisible={false}
-            />
-          </div>
-        )} */}
         {step >= 2 && <DeletedTweets tweets={fullDeletedTweet} />}
       </div>
       {step >= 2 && (

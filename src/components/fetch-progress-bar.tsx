@@ -1,6 +1,4 @@
 import ProgressBar from "@ramonak/react-progress-bar";
-import React from "react";
-import useScroll from "../lib/hooks/use-scroll";
 
 export type FetchProgressBarProps = {
   numFetched: number;

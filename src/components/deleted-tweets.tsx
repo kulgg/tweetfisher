@@ -1,7 +1,5 @@
-import React from "react";
 import { FullDeletedTweet } from "../pages";
 import ArchivedTweet from "./tweet";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export default function DeletedTweets({
   tweets,

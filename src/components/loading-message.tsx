@@ -1,4 +1,3 @@
-import React from "react";
 import LoadingTriangle from "./loading-triangle";
 
 export type LoadingMessageProps = {

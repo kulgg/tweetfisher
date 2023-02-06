@@ -3,9 +3,9 @@ import { type AppType } from "next/dist/shared/lib/utils";
 
 import "../styles/globals.css";
 
-import cx from "classnames";
-import localFont from "@next/font/local";
 import { Inter } from "@next/font/google";
+import localFont from "@next/font/local";
+import cx from "classnames";
 
 const clash = localFont({
   src: "../styles/ClashDisplay-Semibold.otf",

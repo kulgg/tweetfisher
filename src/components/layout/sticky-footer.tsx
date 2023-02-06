@@ -1,9 +1,6 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import React from "react";
 import DeletedTweetsStatus from "../deleted-tweets-status";
 import FetchProgressBar from "../fetch-progress-bar";
-import LoadingSpin from "../loading-spin";
-import ScrollToTop from "../scroll-to-top";
 import GrayButton from "../ui/buttons/gray-button";
 
 export type StickyFooterProps = {

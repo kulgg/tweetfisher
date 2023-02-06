@@ -1,7 +1,7 @@
+import fs from "fs";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { TweetObject } from "../../../../../types/TweetObject";
 import { fetchPlus } from "../../../../../utils/fetch";
-import fs from "fs";
 import firstParser from "../../../../../utils/parsers/first-parser";
 import secondParser from "../../../../../utils/parsers/second-parser";
 
