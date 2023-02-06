@@ -1,4 +1,4 @@
-# Find Deleted Tweets
+# TweetFisher
 
 Next.js app that finds deleted tweets that have been archived by the wayback machine ([archive.org](https://web.archive.org/))
 
@@ -9,6 +9,8 @@ Initially I wanted to do all requests client side so that I could host the app f
 Both archive.org and twitter.com do not set the needed CORS headers. Therefore you cannot access the contents of the response from frontend code even if you set 'no-cors' mode for the request. Additionally the HTTP HEAD requests to twitter.com that check wether tweets have been deleted need to imitate search engine headers to work. This can also not be done in frontend requests because the browser always adds additional headers.
 
 As a solution, all requests are wrapped by Next.js API routes. Unfortunately this means that it is hard to host this app for distributed use, because of throttling contraints.
+
+---
 
 ToDo
 
@@ -33,6 +35,8 @@ ToDo
 - [ ] Enable One-Click Vercel Deploy
 
 ---
+
+Nice to have
 
 - [ ] Add tooltips in settings
 - [ ] Allow lightmode
