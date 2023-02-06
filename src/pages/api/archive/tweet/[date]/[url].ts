@@ -65,7 +65,7 @@ export default async function handler(
       return handleResponse(res, tweetObj, webArchiveUrl);
     }
 
-    const msg = `[${url}]\nAll parsers failed\n\n`;
+    const msg = `[${webArchiveUrl}]\nAll parsers failed\n\n`;
     fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
   }
 

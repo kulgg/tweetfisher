@@ -30,7 +30,7 @@ function FetchProgressBar({
           </span>
         </span>
         {numMissed > 0 && (
-          <span className="text-sm text-red-200">({numMissed} missed)</span>
+          <span className="text-sm text-zinc-300">({numMissed} missed)</span>
         )}
       </div>
     </div>
