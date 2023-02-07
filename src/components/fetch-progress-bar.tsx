@@ -21,18 +21,6 @@ function FetchProgressBar({
         baseBgColor="#374151"
         isLabelVisible={false}
       />
-      <div className="flex items-center gap-2 whitespace-nowrap">
-        <span className="text-gray-200">
-          {numFetched} /{" "}
-          <span className="">
-            <span className="font-semibold text-emerald-200">{numTotal}</span>{" "}
-            archived tweets
-          </span>
-        </span>
-        {numMissed > 0 && (
-          <span className="text-sm text-zinc-300">({numMissed} missed)</span>
-        )}
-      </div>
     </div>
   );
 }

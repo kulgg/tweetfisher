@@ -35,10 +35,6 @@ export type FullDeletedTweet = {
 const Home: NextPage = () => {
   const [twitterTps, setTwitterTps] = useState(1.1);
   const [archiveTps, setArchiveTps] = useState(3.0);
-  const twitterRequestQueue = useCallback(
-    throttledQueue(twitterTps, 1000, true),
-    [twitterTps]
-  );
   const archiveRequestQueue = useCallback(
     throttledQueue(archiveTps, 1000, true),
     [archiveTps]
@@ -57,15 +53,11 @@ const Home: NextPage = () => {
     }
   };
 
-  console.log("twitterQueue", twitterRequestQueue);
-  console.log("twitterTps", twitterTps);
-
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
-  const [validArchivedTweets, setValidArchivedTweets] = useState<
-    DeletedTweet[]
-  >([]);
+  const [validTweets, setValidTweets] = useState<DeletedTweet[]>([]);
+  const [tweetQueue, setTweetQueue] = useState<DeletedTweet[]>([]);
   const [deletedTweets, setDeletedTweets] = useState<DeletedTweet[]>([]);
   const [missedTweets, setMissedTweets] = useState<DeletedTweet[]>([]);
   const [numFetched, setNumFetched] = useState(0);
@@ -78,40 +70,29 @@ const Home: NextPage = () => {
     setUsernameInput(e.currentTarget.value);
   };
 
-  const fetchTweetStati = (
-    data: DeletedTweet[],
-    is_refetch: boolean = false
-  ) => {
-    for (let i = 0; i < data.length; i++) {
-      twitterRequestQueue(() => {
-        if (data && data[i]) {
-          fetchTweetStatus(data[i]!.url).then((x) => {
-            if (is_refetch) {
-              if (x === 429 || x === 500) {
-                return;
-              }
-
-              if (x === 404) {
-                setDeletedTweets((prev) => [...prev, data[i]!]);
-              }
-              setMissedTweets((prev) =>
-                prev.filter((x) => x.url !== data[i]!.url)
-              );
-              return;
-            }
-
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (tweetQueue.length > 0) {
+        const next = tweetQueue[0];
+        setTweetQueue((prev) => [...prev.slice(1)]);
+        if (next) {
+          fetchTweetStatus(next.url).then((x) => {
             if (x === 429 || x === 500) {
-              setMissedTweets((prev) => [...prev, data[i]!]);
+              setMissedTweets((prev) => [...prev, next]);
             }
             if (x === 404) {
-              setDeletedTweets((prev) => [...prev, data[i]!]);
+              setDeletedTweets((prev) => [...prev, next]);
             }
             setNumFetched((prev) => prev + 1);
           });
         }
-      });
-    }
-  };
+      }
+    }, 1000 / twitterTps);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [twitterTps, tweetQueue]);
 
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
@@ -128,14 +109,14 @@ const Home: NextPage = () => {
       const validArchivedTweets = data.filter((x: DeletedTweet) =>
         isValidTweetStatusUrl(x.url)
       );
-      setValidArchivedTweets([...validArchivedTweets]);
-      fetchTweetStati(validArchivedTweets);
+      setValidTweets([...validArchivedTweets]);
+      setTweetQueue([...validArchivedTweets]);
     },
   });
 
   console.log(usernameInput);
   console.log("data", archiveQuery.data);
-  console.log("valid", validArchivedTweets);
+  console.log("valid", tweetQueue);
   console.log("deleted", deletedTweets);
   console.log("fullDeleted", fullDeletedTweet);
   console.log("step", step);
@@ -145,7 +126,8 @@ const Home: NextPage = () => {
     setStep(1);
     setDeletedTweets([]);
     setFullDeletedTweet([]);
-    setValidArchivedTweets([]);
+    setTweetQueue([]);
+    setValidTweets([]);
     setMissedTweets([]);
     setFetchedUrls([]);
     setNumFetched(0);
@@ -192,39 +174,20 @@ const Home: NextPage = () => {
     }
   }, [deletedTweets]);
 
-  if (
-    step !== 3 &&
-    step !== 4 &&
-    archiveQuery.data &&
-    numFetched === validArchivedTweets.length
-  ) {
+  if (step === 2 && archiveQuery.data && numFetched === validTweets.length) {
     setStep(3);
   }
   if (
-    step !== 4 &&
+    step === 3 &&
     archiveQuery.data &&
-    numFetched === validArchivedTweets.length &&
+    numFetched === validTweets.length &&
     fullDeletedTweet.length === deletedTweets.length
   ) {
     setStep(4);
   }
 
-  const isHeaderVisible = useScroll(400);
-
   return (
-    <Layout
-      progressBar={
-        step === 2 ? (
-          <FetchProgressBar
-            numFetched={numFetched}
-            numTotal={validArchivedTweets.length}
-            numMissed={missedTweets.length}
-          />
-        ) : (
-          <div></div>
-        )
-      }
-    >
+    <Layout>
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -274,7 +237,7 @@ const Home: NextPage = () => {
           <div className="">
             <div className="grid grid-cols-3 gap-2 text-lg">
               <span className="text-right font-semibold text-emerald-200">
-                {validArchivedTweets.length}
+                {validTweets.length}
               </span>
               <div className="col-span-2">archived tweets.</div>
             </div>
@@ -295,7 +258,7 @@ const Home: NextPage = () => {
                   <div className="col-span-2 flex items-center gap-2">
                     missed tweets.
                     <div
-                      onClick={() => fetchTweetStati(missedTweets, true)}
+                      // onClick={() => fetchTweetStati(missedTweets, true)}
                       className="cursor-pointer rounded-full bg-gray-600 p-1 text-gray-100 hover:bg-gray-500 hover:text-white active:scale-110"
                     >
                       <svg
@@ -325,7 +288,7 @@ const Home: NextPage = () => {
         <StickyFooter
           numLoadedDeletedTweets={fullDeletedTweet.length}
           numTotalDeletedTweets={deletedTweets.length}
-          numArchivedTweets={validArchivedTweets.length}
+          numValidTweets={validTweets.length}
           numFetchedTweetStati={numFetched}
           numMissedTweetStati={missedTweets.length}
           handle={username}

@@ -6,10 +6,9 @@ import Header from "./sticky-header";
 
 export type LayoutProps = {
   children: React.ReactNode;
-  progressBar: JSX.Element;
 };
 
-function Layout({ children, progressBar }: LayoutProps) {
+function Layout({ children }: LayoutProps) {
   const isScrollToTopVisible = useScroll(1500);
 
   return (

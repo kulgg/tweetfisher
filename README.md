@@ -29,8 +29,8 @@ ToDo
 - [x] Add throttle settings PopUp UI
 - [x] Finish sticky header
 - [x] Validate that urls are of an actual status
+- [x] Queues should instantly use updated TPS values
 - [ ] Fix Index state mess
-- [ ] Queues should instantly use updated TPS values
 - [ ] Check if account is active or not
 - [ ] Enable One-Click Vercel Deploy
 

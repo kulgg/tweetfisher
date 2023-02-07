@@ -6,7 +6,7 @@ import GrayButton from "../ui/buttons/gray-button";
 export type StickyFooterProps = {
   numLoadedDeletedTweets: number;
   numTotalDeletedTweets: number;
-  numArchivedTweets: number;
+  numValidTweets: number;
   numFetchedTweetStati: number;
   numMissedTweetStati: number;
   handle: string;
@@ -15,7 +15,7 @@ export type StickyFooterProps = {
 
 function StickyFooter({
   numLoadedDeletedTweets,
-  numArchivedTweets,
+  numValidTweets,
   numFetchedTweetStati,
   numTotalDeletedTweets,
   numMissedTweetStati,
@@ -30,24 +30,35 @@ function StickyFooter({
             @{handle}
           </div>
           <div className="h-12 border-r border-r-gray-300"></div>
-          <FetchProgressBar
-            numFetched={numFetchedTweetStati}
-            numTotal={numArchivedTweets}
-            numMissed={numMissedTweetStati}
-          />
+
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <span className="text-gray-200">
+              {numFetchedTweetStati} /{" "}
+              <span className="">
+                <span className="font-semibold text-emerald-200">
+                  {numValidTweets}
+                </span>{" "}
+                archived tweets
+              </span>
+            </span>
+            {numMissedTweetStati > 0 && (
+              <span className="text-sm text-zinc-300">
+                ({numMissedTweetStati} missed)
+              </span>
+            )}
+          </div>
           <div className="h-12 border-r border-r-gray-300"></div>
           <DeletedTweetsStatus
             numLoaded={numLoadedDeletedTweets}
             total={numTotalDeletedTweets}
           />
-          <div className="h-12 border-r border-r-gray-300"></div>
-          <GrayButton handleClick={handleSettingsClick}>
-            <div className="mt-[1px] w-5">
-              <Cog6ToothIcon />
-            </div>
-            <div>Settings</div>
-          </GrayButton>
         </div>
+        <GrayButton handleClick={handleSettingsClick}>
+          <div className="mt-[1px] w-5">
+            <Cog6ToothIcon />
+          </div>
+          <div>Settings</div>
+        </GrayButton>
       </div>
     </div>
   );
