@@ -10,7 +10,7 @@ function Header() {
         scrolled
           ? "border-b border-gray-700 bg-gray-800/50 backdrop-blur-xl"
           : "border-b border-gray-900 bg-black"
-      } z-30 transition-all`}
+      } z-5 transition-all`}
     >
       <div className="mx-5 flex h-16 max-w-6xl items-center justify-between xl:mx-auto">
         <Link href="/" className="flex items-center font-display text-2xl">
