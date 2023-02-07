@@ -23,10 +23,17 @@ export const fetchPlus = async (
   return null;
 };
 
+const cleanUrl = (url: string) => {
+  return url.replace("http://", "https://");
+};
+
 const fetchTweetStatus = async (s: string): Promise<number> => {
-  const response = await fetch(`/api/twitter/${encodeURIComponent(s)}`, {
-    method: "HEAD",
-  });
+  const response = await fetch(
+    `/api/twitter/${encodeURIComponent(cleanUrl(s))}`,
+    {
+      method: "HEAD",
+    }
+  );
 
   return response.status;
 };
