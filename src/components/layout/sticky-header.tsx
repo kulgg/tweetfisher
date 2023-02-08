@@ -43,7 +43,7 @@ function Header() {
               </svg>
             </a>
             <a
-              href="https://github.com/kulgg/deletedtweets"
+              href="https://github.com/kulgg/tweetfisher"
               target="_blank"
               rel="noopener noreferrer"
             >

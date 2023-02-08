@@ -1,6 +1,7 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import GrayButton from "./ui/buttons/gray-button";
+import Tooltip from "./ui/tooltip";
 
 export type UsernameFormProps = {
   username: string;

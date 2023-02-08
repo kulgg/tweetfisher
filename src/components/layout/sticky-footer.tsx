@@ -1,64 +1,135 @@
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import {
+  Cog6ToothIcon,
+  ArchiveBoxIcon,
+  XMarkIcon,
+  SignalSlashIcon,
+  BoltIcon,
+} from "@heroicons/react/24/outline";
 import DeletedTweetsStatus from "../deleted-tweets-status";
 import FetchProgressBar from "../fetch-progress-bar";
+import LoadingSpin from "../loading-spin";
 import GrayButton from "../ui/buttons/gray-button";
+import Tooltip from "../ui/tooltip";
 
 export type StickyFooterProps = {
-  numLoadedDeletedTweets: number;
+  numUniqueTweets: number;
   numTotalDeletedTweets: number;
-  numValidTweets: number;
-  numFetchedTweetStati: number;
+  tweetStatusQueueLength: number;
+  archiveQueueLength: number;
   numMissedTweetStati: number;
+  numStatusResponses: number;
+  numArchiveResponses: number;
   handle: string;
   handleSettingsClick: () => void;
 };
 
 function StickyFooter({
-  numLoadedDeletedTweets,
-  numValidTweets,
-  numFetchedTweetStati,
+  numUniqueTweets,
   numTotalDeletedTweets,
+  tweetStatusQueueLength,
+  archiveQueueLength,
   numMissedTweetStati,
+  numStatusResponses,
+  numArchiveResponses,
   handle,
   handleSettingsClick,
 }: StickyFooterProps) {
   return (
     <div className="fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 rounded-md bg-gray-800 text-gray-100">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
-        <div className="flex w-full items-center gap-3">
-          <div className="whitespace-nowrap bg-gradient-to-r from-emerald-200 to-rose-200 bg-clip-text text-lg font-bold text-transparent">
-            @{handle}
-          </div>
-          <div className="h-12 border-r border-r-gray-300"></div>
-
-          <div className="flex items-center gap-2 whitespace-nowrap">
-            <span className="text-gray-200">
-              {numFetchedTweetStati} /{" "}
-              <span className="">
+        <div className="flex items-center gap-3">
+          <Tooltip text={"Active Account"} color="gray-600">
+            <div className="whitespace-nowrap bg-gradient-to-r from-emerald-200 to-rose-200 bg-clip-text text-lg font-bold text-transparent">
+              @{handle}
+            </div>
+          </Tooltip>
+          <div className="h-12 border-r-2 border-r-gray-500"></div>
+          <Tooltip text={"Unique Archived Tweets"} color="gray-600">
+            <div className="flex items-center gap-2 whitespace-nowrap">
+              <ArchiveBoxIcon className="h-5 w-5" />
+              <div>
                 <span className="font-semibold text-emerald-200">
-                  {numValidTweets}
-                </span>{" "}
-                archived tweets
-              </span>
-            </span>
-            {numMissedTweetStati > 0 && (
-              <span className="text-sm text-zinc-300">
-                ({numMissedTweetStati} missed)
-              </span>
-            )}
-          </div>
-          <div className="h-12 border-r border-r-gray-300"></div>
-          <DeletedTweetsStatus
-            numLoaded={numLoadedDeletedTweets}
-            total={numTotalDeletedTweets}
-          />
+                  {numUniqueTweets}
+                </span>
+              </div>
+            </div>
+          </Tooltip>
+          <div className="h-12 border-r-2 border-r-gray-500"></div>
+          <Tooltip text={"Deleted Tweets"} color="gray-600">
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-2">
+                <XMarkIcon className="h-6 w-6" />
+                <span className="font-semibold text-rose-100">
+                  {numTotalDeletedTweets}
+                </span>
+              </div>
+            </div>
+          </Tooltip>
+          <div className="h-12 border-r-2 border-r-gray-500"></div>
+          <Tooltip text={"Missed Tweets"} color="gray-600">
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-2">
+                <SignalSlashIcon className="h-5 w-5" />
+                <span className="font-semibold text-gray-200">
+                  {numMissedTweetStati}
+                </span>
+              </div>
+            </div>
+          </Tooltip>
+          <div className="h-12 border-r-2 border-r-gray-500"></div>
+          {tweetStatusQueueLength > 0 && (
+            <div className="w-5">
+              <LoadingSpin />
+            </div>
+          )}
+          <Tooltip text={"Twitter Status Queue"} color="gray-600">
+            <div className="flex flex-col text-sm text-gray-400">
+              <div className="flex items-center gap-3">
+                <div>
+                  <span className="text-gray-300">
+                    {tweetStatusQueueLength}
+                  </span>{" "}
+                  <span className="text-xs">in queue</span>
+                </div>
+              </div>
+              <div>
+                <span className="text-gray-300">{numStatusResponses}</span>{" "}
+                <span className="text-xs">responses</span>
+              </div>
+            </div>
+          </Tooltip>
+          <div className="h-12 border-r-2 border-r-gray-700"></div>
+          {archiveQueueLength > 0 && (
+            <div className="w-5">
+              <LoadingSpin />
+            </div>
+          )}
+          <Tooltip text={"Archive Queue"} color="gray-600">
+            <div className="flex flex-col text-sm text-gray-400">
+              <div className="flex items-center gap-3">
+                <div>
+                  <span className="text-gray-300">{archiveQueueLength}</span>{" "}
+                  <span className="text-xs">in queue</span>
+                </div>
+              </div>
+              <div>
+                <span className="text-gray-300">{numArchiveResponses}</span>{" "}
+                <span className="text-xs">responses</span>
+              </div>
+            </div>
+          </Tooltip>
         </div>
-        <GrayButton handleClick={handleSettingsClick}>
-          <div className="mt-[1px] w-5">
-            <Cog6ToothIcon />
+        <div className="flex flex-row gap-3 text-sm"></div>
+        <div className="flex items-center">
+          <div>
+            <GrayButton handleClick={handleSettingsClick}>
+              <div className="mt-[1px] w-5">
+                <Cog6ToothIcon />
+              </div>
+              <div>Settings</div>
+            </GrayButton>
           </div>
-          <div>Settings</div>
-        </GrayButton>
+        </div>
       </div>
     </div>
   );
