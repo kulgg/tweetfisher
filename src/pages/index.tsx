@@ -32,7 +32,6 @@ export type FullDeletedTweet = {
 const Home: NextPage = () => {
   const [twitterTps, setTwitterTps] = useState(1.1);
   const [archiveTps, setArchiveTps] = useState(3.0);
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
   const [tweetQueue, setTweetQueue] = useState<string[]>([]);
@@ -159,7 +158,6 @@ const Home: NextPage = () => {
     },
     enabled: false,
     onSuccess: (data) => {
-      setStep(2);
       const groupedTweets: ITweetMap = data
         .filter(validUrlsFilter)
         .reduce(groupByUrl, {});
@@ -181,7 +179,6 @@ const Home: NextPage = () => {
 
   const reset = () => {
     setUsernameInput("");
-    setStep(1);
     setFullDeletedTweet([]);
     setTweetQueue([]);
     setMissedTweets([]);
@@ -203,17 +200,6 @@ const Home: NextPage = () => {
     reset();
     archiveQuery.refetch();
   };
-
-  if (step === 2 && numStatusResponses === numUniqueTweets) {
-    setStep(3);
-  }
-  if (
-    step === 3 &&
-    numStatusResponses === numUniqueTweets &&
-    fullDeletedTweet.length === numDeleted
-  ) {
-    setStep(4);
-  }
 
   return (
     <Layout>
@@ -262,9 +248,9 @@ const Home: NextPage = () => {
         {archiveQuery.isFetching && (
           <LoadingMessage message="Searching for archived tweets" />
         )}
-        {step >= 2 && <DeletedTweets tweets={fullDeletedTweet} />}
+        {username && <DeletedTweets tweets={fullDeletedTweet} />}
       </div>
-      {step >= 2 && (
+      {username && (
         <StickyFooter
           numUniqueTweets={numUniqueTweets}
           numTotalDeletedTweets={numDeleted}

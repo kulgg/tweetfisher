@@ -30,7 +30,7 @@ ToDo
 - [x] Finish sticky header
 - [x] Validate that urls are of an actual status
 - [x] Queues should instantly use updated TPS values
-- [ ] Fix Index state mess
+- [x] Fix Index state mess
 - [ ] Check if account is active or not
 - [ ] Enable One-Click Vercel Deploy
 
@@ -38,5 +38,5 @@ ToDo
 
 Nice to have
 
-- [ ] Add tooltips in settings
+- [x] Add tooltips in settings
 - [ ] Allow lightmode
