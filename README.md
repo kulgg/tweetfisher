@@ -1,18 +1,37 @@
-# TweetFisher
+<h1 align="center">TweetFisher</h1>
 
-Next.js app that finds deleted tweets that have been archived by the wayback machine ([archive.org](https://web.archive.org/))
+Uncover the Lost Gems: Next.js app that **finds deleted tweets** that have been archived by the wayback machine ([archive.org](https://web.archive.org/))
+
+## Getting started
+
+### Prerequisites
+
+- Install [Node.js and npm](https://nodejs.org/en/download/)
+
+### Running locally
+
+```
+git clone https://github.com/kulgg/tweetfisher.git
+cd tweetfisher
+npm run dev
+
+```
+
+## FAQ
 
 ### Why are the requests not done client side?
 
-Initially I wanted to do all requests client side so that I could host the app for users and not run into throttling problems. However, I quickly discovered that it's not possible.
+Initially, I wanted to perform all requests on the client-side to avoid throttling problems and allow for easy hosting for users. However, I soon realized that this was not possible. Both archive.org and twitter.com do not set the required CORS headers, making it impossible to access response contents from the frontend code, even when using the 'no-cors' mode for requests. Furthermore, the HTTP HEAD requests to twitter.com that check for deleted tweets must imitate search engine headers to function properly, but this cannot be done in frontend requests as the browser adds additional headers.
 
-Both archive.org and twitter.com do not set the needed CORS headers. Therefore you cannot access the contents of the response from frontend code even if you set 'no-cors' mode for the request. Additionally the HTTP HEAD requests to twitter.com that check wether tweets have been deleted need to imitate search engine headers to work. This can also not be done in frontend requests because the browser always adds additional headers.
+As a solution, all requests have been wrapped by Next.js API routes. Unfortunately, this makes it difficult to host this app for widespread use due to throttling constraints.
 
-As a solution, all requests are wrapped by Next.js API routes. Unfortunately this means that it is hard to host this app for distributed use, because of throttling contraints.
+## Additional Features
 
----
+- [ ] Consider account state (Active, Inactive, Suspended)
+- [ ] Adaptive throttling
+- [ ] Parse quote tweets
 
-ToDo
+### Backlog
 
 - [x] Backend should request multiple times incase of failure
 - [x] Do requests concurrently with ability to set max TPS
@@ -31,12 +50,3 @@ ToDo
 - [x] Validate that urls are of an actual status
 - [x] Queues should instantly use updated TPS values
 - [x] Fix Index state mess
-- [ ] Check if account is active or not
-- [ ] Enable One-Click Vercel Deploy
-
----
-
-Nice to have
-
-- [x] Add tooltips in settings
-- [ ] Allow lightmode

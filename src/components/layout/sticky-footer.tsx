@@ -82,44 +82,48 @@ function StickyFooter({
             </div>
           </Tooltip>
           <div className="h-12 border-r-2 border-r-gray-500"></div>
-          {tweetStatusQueueLength > 0 && (
-            <div className="w-5">
-              <LoadingSpin />
-            </div>
-          )}
           <Tooltip text={"Twitter Status Queue"} color="gray-600">
-            <div className="flex flex-col text-sm text-gray-400">
-              <div className="flex items-center gap-3">
-                <div>
-                  <span className="text-gray-300">
-                    {tweetStatusQueueLength}
-                  </span>{" "}
-                  <span className="text-xs">in queue</span>
+            <div className="flex items-center gap-3">
+              {tweetStatusQueueLength > 0 && (
+                <div className="w-5">
+                  <LoadingSpin />
                 </div>
-              </div>
-              <div>
-                <span className="text-gray-300">{numStatusResponses}</span>{" "}
-                <span className="text-xs">responses</span>
+              )}
+              <div className="flex flex-col text-sm text-gray-400">
+                <div className="flex items-center gap-3">
+                  <div>
+                    <span className="text-gray-300">
+                      {tweetStatusQueueLength}
+                    </span>{" "}
+                    <span className="text-xs">in queue</span>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-gray-300">{numStatusResponses}</span>{" "}
+                  <span className="text-xs">responses</span>
+                </div>
               </div>
             </div>
           </Tooltip>
           <div className="h-12 border-r-2 border-r-gray-700"></div>
-          {archiveQueueLength > 0 && (
-            <div className="w-5">
-              <LoadingSpin />
-            </div>
-          )}
           <Tooltip text={"Archive Queue"} color="gray-600">
-            <div className="flex flex-col text-sm text-gray-400">
-              <div className="flex items-center gap-3">
-                <div>
-                  <span className="text-gray-300">{archiveQueueLength}</span>{" "}
-                  <span className="text-xs">in queue</span>
+            <div className="flex items-center gap-3">
+              {archiveQueueLength > 0 && (
+                <div className="w-5">
+                  <LoadingSpin />
                 </div>
-              </div>
-              <div>
-                <span className="text-gray-300">{numArchiveResponses}</span>{" "}
-                <span className="text-xs">responses</span>
+              )}
+              <div className="flex flex-col text-sm text-gray-400">
+                <div className="flex items-center gap-3">
+                  <div>
+                    <span className="text-gray-300">{archiveQueueLength}</span>{" "}
+                    <span className="text-xs">in queue</span>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-gray-300">{numArchiveResponses}</span>{" "}
+                  <span className="text-xs">responses</span>
+                </div>
               </div>
             </div>
           </Tooltip>

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { type NextPage } from "next";
+import next, { type NextPage } from "next";
 import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import Layout from "../components/layout/layout";
@@ -69,7 +69,7 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setTimeout(() => {
       if (tweetQueue.length > 0) {
         const nextStatusId = tweetQueue[0];
         setTweetQueue((prev) => [...prev.slice(1)]);
@@ -98,12 +98,12 @@ const Home: NextPage = () => {
     }, 1000 / twitterTps);
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(interval);
     };
   }, [twitterTps, tweetQueue]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setTimeout(() => {
       if (archiveQueue.length > 0) {
         const [nextStatus, i] = archiveQueue[0]!;
         if (i > 0) {
@@ -143,7 +143,7 @@ const Home: NextPage = () => {
     }, 1000 / archiveTps);
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(interval);
     };
   }, [archiveTps, archiveQueue]);
 
