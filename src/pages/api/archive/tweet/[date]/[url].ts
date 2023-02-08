@@ -69,5 +69,8 @@ export default async function handler(
     fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
   }
 
+  const msg = `[${webArchiveUrl}]\nNo result\n\n`;
+  fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
+
   return res.status(500).json("Server error");
 }

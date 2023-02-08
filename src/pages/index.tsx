@@ -14,9 +14,9 @@ import UsernameForm from "../components/username-form";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
 import useScroll from "../lib/hooks/use-scroll";
 import fetchTweetStatus from "../utils/fetch";
-import isValidTweetStatusUrl from "../utils/validators";
+import { duplicateUrlsFilter, validUrlsFilter } from "../utils/filter";
 
-type DeletedTweet = {
+export type DeletedTweet = {
   archiveDate: string;
   url: string;
 };
@@ -59,6 +59,7 @@ const Home: NextPage = () => {
   const [validTweets, setValidTweets] = useState<DeletedTweet[]>([]);
   const [tweetQueue, setTweetQueue] = useState<DeletedTweet[]>([]);
   const [deletedTweets, setDeletedTweets] = useState<DeletedTweet[]>([]);
+  const [archiveQueue, setArchiveQueue] = useState<DeletedTweet[]>([]);
   const [missedTweets, setMissedTweets] = useState<DeletedTweet[]>([]);
   const [numFetched, setNumFetched] = useState(0);
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
@@ -82,6 +83,7 @@ const Home: NextPage = () => {
             }
             if (x === 404) {
               setDeletedTweets((prev) => [...prev, next]);
+              setArchiveQueue((prev) => [...prev, next]);
             }
             setNumFetched((prev) => prev + 1);
           });
@@ -93,6 +95,39 @@ const Home: NextPage = () => {
       clearInterval(interval);
     };
   }, [twitterTps, tweetQueue]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (archiveQueue.length > 0) {
+        const next = archiveQueue[0];
+        setArchiveQueue((prev) => [...prev.slice(1)]);
+        if (next) {
+          fetch(
+            `/api/archive/tweet/${next.archiveDate}/${encodeURIComponent(
+              next.url
+            )}`
+          )
+            .then((x) => x.json())
+            .then((x) => {
+              if (x !== "Server error") {
+                setFullDeletedTweet((prev) => [
+                  ...prev,
+                  {
+                    ...x,
+                    url: `https://web.archive.org/web/${next.archiveDate}/${next.url}`,
+                    handle: username,
+                  },
+                ]);
+              }
+            });
+        }
+      }
+    }, 1000 / archiveTps);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [archiveTps, archiveQueue]);
 
   const archiveQuery = useQuery({
     queryKey: ["webarchive"],
@@ -106,9 +141,9 @@ const Home: NextPage = () => {
     enabled: false,
     onSuccess: (data) => {
       setStep(2);
-      const validArchivedTweets = data.filter((x: DeletedTweet) =>
-        isValidTweetStatusUrl(x.url)
-      );
+      const validArchivedTweets = data
+        .filter(validUrlsFilter)
+        .filter(duplicateUrlsFilter);
       setValidTweets([...validArchivedTweets]);
       setTweetQueue([...validArchivedTweets]);
     },
@@ -140,39 +175,6 @@ const Home: NextPage = () => {
     reset();
     archiveQuery.refetch();
   };
-
-  useEffect(() => {
-    for (let i = 0; i < deletedTweets.length; i++) {
-      if (fetchedUrls.find((x) => x === deletedTweets[i]!.url)) {
-        console.log("Skipping", deletedTweets[i]!.url);
-        continue;
-      }
-      console.log("Fetching", deletedTweets[i]!.url);
-      setFetchedUrls((prev) => [...prev, deletedTweets[i]!.url]);
-      archiveRequestQueue(() =>
-        fetch(
-          `/api/archive/tweet/${
-            deletedTweets[i]!.archiveDate
-          }/${encodeURIComponent(deletedTweets[i]!.url)}`
-        )
-          .then((x) => x.json())
-          .then((x) => {
-            if (x !== "Server error") {
-              setFullDeletedTweet((prev) => [
-                ...prev,
-                {
-                  ...x,
-                  url: `https://web.archive.org/web/${
-                    deletedTweets[i]!.archiveDate
-                  }/${deletedTweets[i]!.url}`,
-                  handle: username,
-                },
-              ]);
-            }
-          })
-      );
-    }
-  }, [deletedTweets]);
 
   if (step === 2 && archiveQuery.data && numFetched === validTweets.length) {
     setStep(3);
