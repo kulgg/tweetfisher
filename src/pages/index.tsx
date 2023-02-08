@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import next, { type NextPage } from "next";
-import React, { useCallback, useEffect, useState } from "react";
-import throttledQueue from "throttled-queue";
+import { type NextPage } from "next";
+import React, { useEffect, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
-import FetchProgressBar from "../components/fetch-progress-bar";
 import Layout from "../components/layout/layout";
 import StickyFooter from "../components/layout/sticky-footer";
 import LoadingMessage from "../components/loading-message";
@@ -12,15 +10,8 @@ import SettingsModal from "../components/settings-modal";
 import StarOnGithubButton from "../components/ui/buttons/star-github";
 import UsernameForm from "../components/username-form";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
-import useScroll from "../lib/hooks/use-scroll";
 import fetchTweetStatus from "../utils/fetch";
-import {
-  duplicateUrlsFilter,
-  groupByUrl,
-  ITweetMap,
-  validUrlsFilter,
-} from "../utils/filter";
-import { default as cn } from "classnames";
+import { groupByUrl, ITweetMap, validUrlsFilter } from "../utils/filter";
 
 export type DeletedTweet = {
   archiveDate: string;
@@ -41,24 +32,6 @@ export type FullDeletedTweet = {
 const Home: NextPage = () => {
   const [twitterTps, setTwitterTps] = useState(1.1);
   const [archiveTps, setArchiveTps] = useState(3.0);
-  const archiveRequestQueue = useCallback(
-    throttledQueue(archiveTps, 1000, true),
-    [archiveTps]
-  );
-
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
-
-  const handleSave = (twitterTpsInput: string, archiveTpsInput: string) => {
-    const twitterTpsFloat = parseFloat(twitterTpsInput);
-    if (!isNaN(twitterTpsFloat)) {
-      setTwitterTps(twitterTpsFloat);
-    }
-    const archiveTpsFloat = parseFloat(archiveTpsInput);
-    if (!isNaN(archiveTpsFloat)) {
-      setArchiveTps(archiveTpsFloat);
-    }
-  };
-
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
@@ -73,6 +46,19 @@ const Home: NextPage = () => {
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
     []
   );
+
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+
+  const handleSave = (twitterTpsInput: string, archiveTpsInput: string) => {
+    const twitterTpsFloat = parseFloat(twitterTpsInput);
+    if (!isNaN(twitterTpsFloat)) {
+      setTwitterTps(twitterTpsFloat);
+    }
+    const archiveTpsFloat = parseFloat(archiveTpsInput);
+    if (!isNaN(archiveTpsFloat)) {
+      setArchiveTps(archiveTpsFloat);
+    }
+  };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsernameInput(e.currentTarget.value);
@@ -223,7 +209,6 @@ const Home: NextPage = () => {
   }
   if (
     step === 3 &&
-    // archiveQuery.data &&
     numStatusResponses === numUniqueTweets &&
     fullDeletedTweet.length === numDeleted
   ) {

@@ -1,7 +1,7 @@
 {
-  "name": "deletedtweets",
+  "name": "tweetfisher",
   "version": "0.1.0",
-  "private": true,
+  "author": "kulgg",
   "scripts": {
     "build": "next build",
     "dev": "next dev",

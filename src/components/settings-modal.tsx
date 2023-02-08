@@ -94,6 +94,7 @@ export default function SettingsModal({
                                 className="block w-full border-0 bg-gray-800 p-1 text-gray-200 placeholder-gray-500 focus:ring-0 sm:text-base"
                                 placeholder="1.0"
                                 value={twitterTpsInput}
+                                autoComplete="off"
                                 onChange={(e) =>
                                   setTwitterTpsInput(e.target.value)
                                 }
@@ -114,6 +115,7 @@ export default function SettingsModal({
                               className="block w-full border-0 bg-gray-800 p-1 text-gray-200 placeholder-gray-500 focus:ring-0 sm:text-base"
                               placeholder="1.0"
                               value={archiveTpsInput}
+                              autoComplete="off"
                               onChange={(e) =>
                                 setArchiveTpsInput(e.target.value)
                               }

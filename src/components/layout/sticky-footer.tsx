@@ -1,12 +1,10 @@
 import {
-  Cog6ToothIcon,
   ArchiveBoxIcon,
-  XMarkIcon,
-  SignalSlashIcon,
   ArrowPathIcon,
+  Cog6ToothIcon,
+  SignalSlashIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
-import DeletedTweetsStatus from "../deleted-tweets-status";
-import FetchProgressBar from "../fetch-progress-bar";
 import LoadingSpin from "../loading-spin";
 import GrayButton from "../ui/buttons/gray-button";
 import Tooltip from "../ui/tooltip";
@@ -57,7 +55,7 @@ function StickyFooter({
             </div>
           </Tooltip>
           <div className="h-12 border-r-2 border-r-gray-500"></div>
-          <Tooltip text={"Deleted Tweets"} color="gray-600">
+          <Tooltip text={"Deleted Tweets (so far)"} color="gray-600">
             <div className="flex items-center justify-center gap-4">
               <div className="flex items-center gap-2">
                 <XMarkIcon className="h-6 w-6" />
