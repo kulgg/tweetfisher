@@ -10,14 +10,20 @@ Uncover the Lost Gems: Next.js app that **finds deleted tweets** that have been 
 
 ### Running locally
 
-1. `git clone https://github.com/kulgg/tweetfisher.git`
+```
+git clone https://github.com/kulgg/tweetfisher.git
+```
 
-2. `cd tweetfisher`
+```
+cd tweetfisher
+```
 
-3. `npm install`
+```
+npm install
+```
 
-4. `npm run dev`
-
+```
+npm run dev
 ```
 
 ## FAQ
@@ -53,4 +59,7 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 - [x] Validate that urls are of an actual status
 - [x] Queues should instantly use updated TPS values
 - [x] Fix Index state mess
+
+```
+
 ```
