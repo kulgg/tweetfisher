@@ -3,7 +3,7 @@ import {
   ArchiveBoxIcon,
   XMarkIcon,
   SignalSlashIcon,
-  BoltIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import DeletedTweetsStatus from "../deleted-tweets-status";
 import FetchProgressBar from "../fetch-progress-bar";
@@ -21,6 +21,7 @@ export type StickyFooterProps = {
   numArchiveResponses: number;
   handle: string;
   handleSettingsClick: () => void;
+  handleRefetchClick: () => void;
 };
 
 function StickyFooter({
@@ -33,9 +34,10 @@ function StickyFooter({
   numArchiveResponses,
   handle,
   handleSettingsClick,
+  handleRefetchClick,
 }: StickyFooterProps) {
   return (
-    <div className="fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 rounded-md bg-gray-800 text-gray-100">
+    <div className="fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 rounded-md bg-gray-800 px-2 text-gray-100 lg:px-0">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
         <div className="flex items-center gap-3">
           <Tooltip text={"Active Account"} color="gray-600">
@@ -73,6 +75,11 @@ function StickyFooter({
                 <span className="font-semibold text-gray-200">
                   {numMissedTweetStati}
                 </span>
+                {numMissedTweetStati > 0 && (
+                  <GrayButton handleClick={handleRefetchClick}>
+                    <ArrowPathIcon className="h-4 w-4" />
+                  </GrayButton>
+                )}
               </div>
             </div>
           </Tooltip>

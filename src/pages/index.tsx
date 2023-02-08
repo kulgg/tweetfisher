@@ -288,6 +288,7 @@ const Home: NextPage = () => {
           numMissedTweetStati={missedTweets.length}
           numStatusResponses={numStatusResponses}
           numArchiveResponses={numArchiveResponses}
+          handleRefetchClick={refetchMissed}
           handle={username}
           handleSettingsClick={() => setIsSettingsModalVisible(true)}
         />
