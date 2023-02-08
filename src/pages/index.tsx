@@ -58,14 +58,13 @@ const Home: NextPage = () => {
   const [username, setUsername] = useState("");
   const [validTweets, setValidTweets] = useState<DeletedTweet[]>([]);
   const [tweetQueue, setTweetQueue] = useState<DeletedTweet[]>([]);
-  const [deletedTweets, setDeletedTweets] = useState<DeletedTweet[]>([]);
   const [archiveQueue, setArchiveQueue] = useState<DeletedTweet[]>([]);
   const [missedTweets, setMissedTweets] = useState<DeletedTweet[]>([]);
   const [numFetched, setNumFetched] = useState(0);
+  const [numDeleted, setNumDeleted] = useState(0);
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
     []
   );
-  const [fetchedUrls, setFetchedUrls] = useState<string[]>([]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsernameInput(e.currentTarget.value);
@@ -82,8 +81,8 @@ const Home: NextPage = () => {
               setMissedTweets((prev) => [...prev, next]);
             }
             if (x === 404) {
-              setDeletedTweets((prev) => [...prev, next]);
               setArchiveQueue((prev) => [...prev, next]);
+              setNumDeleted((prev) => prev + 1);
             }
             setNumFetched((prev) => prev + 1);
           });
@@ -146,44 +145,47 @@ const Home: NextPage = () => {
         .filter(duplicateUrlsFilter);
       setValidTweets([...validArchivedTweets]);
       setTweetQueue([...validArchivedTweets]);
+      setFullDeletedTweet([]);
+      archiveQuery.remove();
     },
   });
 
   console.log(usernameInput);
   console.log("data", archiveQuery.data);
   console.log("valid", tweetQueue);
-  console.log("deleted", deletedTweets);
   console.log("fullDeleted", fullDeletedTweet);
   console.log("step", step);
 
   const reset = () => {
     setUsernameInput("");
     setStep(1);
-    setDeletedTweets([]);
     setFullDeletedTweet([]);
     setTweetQueue([]);
     setValidTweets([]);
     setMissedTweets([]);
-    setFetchedUrls([]);
+    setArchiveQueue([]);
     setNumFetched(0);
+    setNumDeleted(0);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
+    if (usernameInput.length === 0) {
+      return;
+    }
     setUsername(usernameInput.replace("@", ""));
     reset();
     archiveQuery.refetch();
   };
 
-  if (step === 2 && archiveQuery.data && numFetched === validTweets.length) {
+  if (step === 2 && numFetched === validTweets.length) {
     setStep(3);
   }
   if (
     step === 3 &&
-    archiveQuery.data &&
+    // archiveQuery.data &&
     numFetched === validTweets.length &&
-    fullDeletedTweet.length === deletedTweets.length
+    fullDeletedTweet.length === numDeleted
   ) {
     setStep(4);
   }
@@ -246,7 +248,7 @@ const Home: NextPage = () => {
             <div className="">
               <div className="grid grid-cols-3 gap-2 text-lg">
                 <span className="text-right font-semibold text-rose-200">
-                  {deletedTweets.length}
+                  {numDeleted}
                 </span>
                 <div className="col-span-2">deleted tweets.</div>
               </div>
@@ -289,7 +291,7 @@ const Home: NextPage = () => {
       {step >= 2 && (
         <StickyFooter
           numLoadedDeletedTweets={fullDeletedTweet.length}
-          numTotalDeletedTweets={deletedTweets.length}
+          numTotalDeletedTweets={numDeleted}
           numValidTweets={validTweets.length}
           numFetchedTweetStati={numFetched}
           numMissedTweetStati={missedTweets.length}
