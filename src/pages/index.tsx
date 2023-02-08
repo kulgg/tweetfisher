@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { type NextPage } from "next";
+import next, { type NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
 import throttledQueue from "throttled-queue";
 import DeletedTweets from "../components/deleted-tweets";
@@ -14,7 +14,13 @@ import UsernameForm from "../components/username-form";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
 import useScroll from "../lib/hooks/use-scroll";
 import fetchTweetStatus from "../utils/fetch";
-import { duplicateUrlsFilter, validUrlsFilter } from "../utils/filter";
+import {
+  duplicateUrlsFilter,
+  groupByUrl,
+  ITweetMap,
+  validUrlsFilter,
+} from "../utils/filter";
+import { default as cn } from "classnames";
 
 export type DeletedTweet = {
   archiveDate: string;
@@ -56,10 +62,11 @@ const Home: NextPage = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
-  const [validTweets, setValidTweets] = useState<DeletedTweet[]>([]);
-  const [tweetQueue, setTweetQueue] = useState<DeletedTweet[]>([]);
-  const [archiveQueue, setArchiveQueue] = useState<DeletedTweet[]>([]);
-  const [missedTweets, setMissedTweets] = useState<DeletedTweet[]>([]);
+  const [tweetQueue, setTweetQueue] = useState<string[]>([]);
+  const [archiveQueue, setArchiveQueue] = useState<[string, number][]>([]);
+  const [missedTweets, setMissedTweets] = useState<string[]>([]);
+  const [tweetToArchivesMap, setTweetToArchivesMap] = useState<ITweetMap>({});
+  const [numValidTweets, setNumValidTweets] = useState(0);
   const [numFetched, setNumFetched] = useState(0);
   const [numDeleted, setNumDeleted] = useState(0);
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
@@ -70,23 +77,37 @@ const Home: NextPage = () => {
     setUsernameInput(e.currentTarget.value);
   };
 
+  const refetchMissed = () => {
+    setTweetQueue((prev) => [...prev, ...missedTweets]);
+    setMissedTweets([]);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (tweetQueue.length > 0) {
-        const next = tweetQueue[0];
+        const nextStatusId = tweetQueue[0];
         setTweetQueue((prev) => [...prev.slice(1)]);
-        if (next) {
-          fetchTweetStatus(next.url).then((x) => {
-            if (x === 429 || x === 500) {
-              setMissedTweets((prev) => [...prev, next]);
-            }
-            if (x === 404) {
-              setArchiveQueue((prev) => [...prev, next]);
-              setNumDeleted((prev) => prev + 1);
-            }
-            setNumFetched((prev) => prev + 1);
-          });
+        if (!nextStatusId) {
+          return;
         }
+        const tweetArchives = tweetToArchivesMap[nextStatusId];
+        if (!tweetArchives) {
+          return;
+        }
+        const first = tweetArchives[0];
+        if (!first) {
+          return;
+        }
+        fetchTweetStatus(first.url).then((x) => {
+          if (x === 429 || x >= 500) {
+            setMissedTweets((prev) => [...prev, nextStatusId]);
+          }
+          if (x === 404) {
+            setArchiveQueue((prev) => [...prev, [nextStatusId, 0]]);
+            setNumDeleted((prev) => prev + 1);
+          }
+          setNumFetched((prev) => prev + 1);
+        });
       }
     }, 1000 / twitterTps);
 
@@ -98,28 +119,39 @@ const Home: NextPage = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (archiveQueue.length > 0) {
-        const next = archiveQueue[0];
-        setArchiveQueue((prev) => [...prev.slice(1)]);
-        if (next) {
-          fetch(
-            `/api/archive/tweet/${next.archiveDate}/${encodeURIComponent(
-              next.url
-            )}`
-          )
-            .then((x) => x.json())
-            .then((x) => {
-              if (x !== "Server error") {
-                setFullDeletedTweet((prev) => [
-                  ...prev,
-                  {
-                    ...x,
-                    url: `https://web.archive.org/web/${next.archiveDate}/${next.url}`,
-                    handle: username,
-                  },
-                ]);
-              }
-            });
+        const [nextStatus, i] = archiveQueue[0]!;
+        if (i > 0) {
+          console.log("Refetching", nextStatus, i);
         }
+        setArchiveQueue((prev) => [...prev.slice(1)]);
+        if (!nextStatus) {
+          return;
+        }
+        const next = tweetToArchivesMap[nextStatus]![i];
+        if (!next) {
+          console.log("No next", nextStatus, i);
+          return;
+        }
+        fetch(
+          `/api/archive/tweet/${next.archiveDate}/${encodeURIComponent(
+            next.url
+          )}`
+        )
+          .then((x) => x.json())
+          .then((x) => {
+            if (x !== "Server error") {
+              setFullDeletedTweet((prev) => [
+                ...prev,
+                {
+                  ...x,
+                  url: `https://web.archive.org/web/${next.archiveDate}/${next.url}`,
+                  handle: username,
+                },
+              ]);
+            } else {
+              setArchiveQueue((prev) => [[nextStatus, i + 1], ...prev]);
+            }
+          });
       }
     }, 1000 / archiveTps);
 
@@ -140,32 +172,36 @@ const Home: NextPage = () => {
     enabled: false,
     onSuccess: (data) => {
       setStep(2);
-      const validArchivedTweets = data
+      const groupedTweets: ITweetMap = data
         .filter(validUrlsFilter)
-        .filter(duplicateUrlsFilter);
-      setValidTweets([...validArchivedTweets]);
-      setTweetQueue([...validArchivedTweets]);
+        .reduce(groupByUrl, {});
+
+      setTweetToArchivesMap(groupedTweets);
+      setNumValidTweets(Object.keys(groupedTweets).length);
+      setTweetQueue(Object.keys(groupedTweets));
       setFullDeletedTweet([]);
       archiveQuery.remove();
     },
   });
 
-  console.log(usernameInput);
-  console.log("data", archiveQuery.data);
-  console.log("valid", tweetQueue);
-  console.log("fullDeleted", fullDeletedTweet);
-  console.log("step", step);
+  // console.log(usernameInput);
+  // console.log("data", archiveQuery.data);
+  // console.log("valid", tweetQueue);
+  // console.log("tweetToArchivesMap", tweetToArchivesMap);
+  // console.log("fullDeleted", fullDeletedTweet);
+  // console.log("step", step);
 
   const reset = () => {
     setUsernameInput("");
     setStep(1);
     setFullDeletedTweet([]);
     setTweetQueue([]);
-    setValidTweets([]);
     setMissedTweets([]);
     setArchiveQueue([]);
+    setTweetToArchivesMap({});
     setNumFetched(0);
     setNumDeleted(0);
+    setNumValidTweets(0);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -178,13 +214,13 @@ const Home: NextPage = () => {
     archiveQuery.refetch();
   };
 
-  if (step === 2 && numFetched === validTweets.length) {
+  if (step === 2 && numFetched === numValidTweets) {
     setStep(3);
   }
   if (
     step === 3 &&
     // archiveQuery.data &&
-    numFetched === validTweets.length &&
+    numFetched === numValidTweets &&
     fullDeletedTweet.length === numDeleted
   ) {
     setStep(4);
@@ -241,16 +277,16 @@ const Home: NextPage = () => {
           <div className="">
             <div className="grid grid-cols-3 gap-2 text-lg">
               <span className="text-right font-semibold text-emerald-200">
-                {validTweets.length}
+                {numValidTweets}
               </span>
-              <div className="col-span-2">archived tweets.</div>
+              <div className="col-span-2">archived tweets</div>
             </div>
             <div className="">
               <div className="grid grid-cols-3 gap-2 text-lg">
                 <span className="text-right font-semibold text-rose-200">
                   {numDeleted}
                 </span>
-                <div className="col-span-2">deleted tweets.</div>
+                <div className="col-span-2">deleted tweets</div>
               </div>
             </div>
             {missedTweets.length > 0 && (
@@ -260,9 +296,9 @@ const Home: NextPage = () => {
                     {missedTweets.length}
                   </span>
                   <div className="col-span-2 flex items-center gap-2">
-                    missed tweets.
+                    missed tweets
                     <div
-                      // onClick={() => fetchTweetStati(missedTweets, true)}
+                      onClick={() => refetchMissed()}
                       className="cursor-pointer rounded-full bg-gray-600 p-1 text-gray-100 hover:bg-gray-500 hover:text-white active:scale-110"
                     >
                       <svg
@@ -292,7 +328,7 @@ const Home: NextPage = () => {
         <StickyFooter
           numLoadedDeletedTweets={fullDeletedTweet.length}
           numTotalDeletedTweets={numDeleted}
-          numValidTweets={validTweets.length}
+          numValidTweets={numValidTweets}
           numFetchedTweetStati={numFetched}
           numMissedTweetStati={missedTweets.length}
           handle={username}
