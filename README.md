@@ -10,16 +10,19 @@ Uncover the Lost Gems: Next.js app that **finds deleted tweets** that have been 
 
 ### Running locally
 
-```
-git clone https://github.com/kulgg/tweetfisher.git
-cd tweetfisher
-npm run dev
+1. `git clone https://github.com/kulgg/tweetfisher.git`
+
+2. `cd tweetfisher`
+
+3. `npm install`
+
+4. `npm run dev`
 
 ```
 
 ## FAQ
 
-### Why are the requests not done client side?
+### Why is this not hosted somewhere?
 
 Initially, I wanted to perform all requests on the client-side to avoid throttling problems and allow for easy hosting for users. However, I soon realized that this was not possible. Both archive.org and twitter.com do not set the required CORS headers, making it impossible to access response contents from the frontend code, even when using the 'no-cors' mode for requests. Furthermore, the HTTP HEAD requests to twitter.com that check for deleted tweets must imitate search engine headers to function properly, but this cannot be done in frontend requests as the browser adds additional headers.
 
@@ -50,3 +53,4 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 - [x] Validate that urls are of an actual status
 - [x] Queues should instantly use updated TPS values
 - [x] Fix Index state mess
+```
