@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import next, { type NextPage } from "next";
 import React, { useEffect, useState } from "react";
@@ -34,6 +33,7 @@ const Home: NextPage = () => {
   const [archiveTps, setArchiveTps] = useState(3.0);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [tweetQueue, setTweetQueue] = useState<string[]>([]);
   const [archiveQueue, setArchiveQueue] = useState<[string, number][]>([]);
   const [missedTweets, setMissedTweets] = useState<string[]>([]);
@@ -147,29 +147,6 @@ const Home: NextPage = () => {
     };
   }, [archiveTps, archiveQueue]);
 
-  const archiveQuery = useQuery({
-    queryKey: ["webarchive"],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/archive/tweets/${usernameInput.replace("@", "")}`
-      );
-      const result = await response.json();
-      return result;
-    },
-    enabled: false,
-    onSuccess: (data) => {
-      const groupedTweets: ITweetMap = data
-        .filter(validUrlsFilter)
-        .reduce(groupByUrl, {});
-
-      setTweetToArchivesMap(groupedTweets);
-      setNumUniqueTweets(Object.keys(groupedTweets).length);
-      setTweetQueue(Object.keys(groupedTweets));
-      setFullDeletedTweet([]);
-      archiveQuery.remove();
-    },
-  });
-
   // console.log(usernameInput);
   // console.log("data", archiveQuery.data);
   // console.log("valid", tweetQueue);
@@ -198,7 +175,28 @@ const Home: NextPage = () => {
     }
     setUsername(usernameInput.replace("@", ""));
     reset();
-    archiveQuery.refetch();
+    setIsLoading(true);
+
+    fetch(`/api/archive/tweets/${usernameInput.replace("@", "")}`)
+      .then((response) => {
+        setIsLoading(false);
+        return response.json();
+      })
+      .then((data) => {
+        const groupedTweets: ITweetMap = data
+          .filter(validUrlsFilter)
+          .reduce(groupByUrl, {});
+
+        setTweetToArchivesMap(groupedTweets);
+        setNumUniqueTweets(Object.keys(groupedTweets).length);
+        setTweetQueue(Object.keys(groupedTweets));
+        setFullDeletedTweet([]);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
+      });
+    // archiveQuery.refetch();
   };
 
   return (
@@ -240,7 +238,7 @@ const Home: NextPage = () => {
       </motion.div>
       <div className="flex flex-col items-center">
         <div className="mt-16"></div>
-        {archiveQuery.isFetching && (
+        {isLoading && (
           <LoadingMessage message="Searching for archived tweets" />
         )}
         {username && <DeletedTweets tweets={fullDeletedTweet} />}

@@ -39,6 +39,7 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 - [ ] Consider account state (Active, Inactive, Suspended)
 - [ ] Adaptive throttling
 - [ ] Parse quote tweets
+- [ ] Fix timeout useEffect queue (ongoing fetches are not invalidates when a new username is entered)
 - [ ] System light/dark mode
 
 ### Backlog
