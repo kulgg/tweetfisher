@@ -19,6 +19,8 @@ const useFetchQueue = <T>({
   const intervalId = useRef<string | NodeJS.Timer | number | null>(null);
   const queueRef = useRef(urlQueue);
   const canaryRef = useRef(invalidateCanary);
+  const requestsPerSecondRef = useRef(requestsPerSecond);
+  console.log("rqps", requestsPerSecond);
 
   useEffect(() => {
     queueRef.current = urlQueue;
@@ -29,8 +31,14 @@ const useFetchQueue = <T>({
   }, [invalidateCanary]);
 
   useEffect(() => {
-    if (urlQueue.length === 0 || intervalId.current) {
+    if (
+      urlQueue.length === 0 ||
+      (intervalId.current && requestsPerSecondRef.current === requestsPerSecond)
+    ) {
       return;
+    }
+    if (intervalId.current) {
+      clearInterval(intervalId.current);
     }
 
     intervalId.current = setInterval(() => {
@@ -54,6 +62,7 @@ const useFetchQueue = <T>({
           });
       }
     }, 1000 / requestsPerSecond);
+    requestsPerSecondRef.current = requestsPerSecond;
     console.log("setting interval", intervalId.current);
   }, [urlQueue, requestsPerSecond]);
 

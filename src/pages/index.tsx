@@ -30,7 +30,6 @@ export type FullDeletedTweet = {
 };
 
 const Home: NextPage = () => {
-  const [twitterTps, setTwitterTps] = useState(1.1);
   const [archiveTps, setArchiveTps] = useState(3.0);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
@@ -54,6 +53,38 @@ const Home: NextPage = () => {
 
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
+  const { requestsPerSecond: twitterTps, setRequestsPerSecond: setTwitterTps } =
+    useFetchQueue({
+      urlQueue: tweetQueue,
+      setUrlQueue: setTweetQueue,
+      invalidateCanary: username,
+      action: (response, invalidated, curr) => {
+        if (invalidated) {
+          console.log("invalidated");
+          return;
+        }
+        const x = response.status;
+        if (x === 429 || x >= 500) {
+          setMissedTweets((prev) => [...prev, curr]);
+        }
+        if (x === 404) {
+          setArchiveQueue((prev) => [...prev, [curr, 0]]);
+          setNumDeleted((prev) => prev + 1);
+        }
+        setNumStatusResponses((prev) => prev + 1);
+      },
+      urlAccessor: (s) => {
+        if (
+          !tweetToArchivesMapRef.current[s] ||
+          tweetToArchivesMapRef.current[s]!.length === 0
+        ) {
+          return "";
+        }
+        const url = tweetToArchivesMapRef.current[s]![0]!.url;
+        return wrapTweetUrl(url);
+      },
+    });
+
   const handleSave = (twitterTpsInput: string, archiveTpsInput: string) => {
     const twitterTpsFloat = parseFloat(twitterTpsInput);
     if (!isNaN(twitterTpsFloat)) {
@@ -73,37 +104,6 @@ const Home: NextPage = () => {
     setTweetQueue((prev) => [...prev, ...missedTweets]);
     setMissedTweets([]);
   };
-
-  const { requestsPerSecond, setRequestsPerSecond } = useFetchQueue({
-    urlQueue: tweetQueue,
-    setUrlQueue: setTweetQueue,
-    invalidateCanary: username,
-    action: (response, invalidated, curr) => {
-      if (invalidated) {
-        console.log("invalidated");
-        return;
-      }
-      const x = response.status;
-      if (x === 429 || x >= 500) {
-        setMissedTweets((prev) => [...prev, curr]);
-      }
-      if (x === 404) {
-        setArchiveQueue((prev) => [...prev, [curr, 0]]);
-        setNumDeleted((prev) => prev + 1);
-      }
-      setNumStatusResponses((prev) => prev + 1);
-    },
-    urlAccessor: (s) => {
-      if (
-        !tweetToArchivesMapRef.current[s] ||
-        tweetToArchivesMapRef.current[s]!.length === 0
-      ) {
-        return "";
-      }
-      const url = tweetToArchivesMapRef.current[s]![0]!.url;
-      return wrapTweetUrl(url);
-    },
-  });
 
   useEffect(() => {
     const interval = setTimeout(() => {
