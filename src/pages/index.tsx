@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import next, { type NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import Layout from "../components/layout/layout";
 import StickyFooter from "../components/layout/sticky-footer";
@@ -9,7 +9,8 @@ import SettingsModal from "../components/settings-modal";
 import StarOnGithubButton from "../components/ui/buttons/star-github";
 import UsernameForm from "../components/username-form";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
-import fetchTweetStatus from "../utils/fetch";
+import useFetchQueue from "../lib/hooks/use-fetch-queue";
+import fetchTweetStatus, { wrapTweetUrl } from "../utils/fetch";
 import { groupByUrl, ITweetMap, validUrlsFilter } from "../utils/filter";
 
 export type DeletedTweet = {
@@ -38,6 +39,7 @@ const Home: NextPage = () => {
   const [archiveQueue, setArchiveQueue] = useState<[string, number][]>([]);
   const [missedTweets, setMissedTweets] = useState<string[]>([]);
   const [tweetToArchivesMap, setTweetToArchivesMap] = useState<ITweetMap>({});
+  const tweetToArchivesMapRef = useRef(tweetToArchivesMap);
   const [numUniqueTweets, setNumUniqueTweets] = useState(0);
   const [numStatusResponses, setNumStatusResponses] = useState(0);
   const [numArchiveResponses, setNumArchiveResponses] = useState(0);
@@ -45,6 +47,10 @@ const Home: NextPage = () => {
   const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
     []
   );
+
+  useEffect(() => {
+    tweetToArchivesMapRef.current = tweetToArchivesMap;
+  }, [tweetToArchivesMap]);
 
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
@@ -68,39 +74,36 @@ const Home: NextPage = () => {
     setMissedTweets([]);
   };
 
-  useEffect(() => {
-    const interval = setTimeout(() => {
-      if (tweetQueue.length > 0) {
-        const nextStatusId = tweetQueue[0];
-        setTweetQueue((prev) => [...prev.slice(1)]);
-        if (!nextStatusId) {
-          return;
-        }
-        const tweetArchives = tweetToArchivesMap[nextStatusId];
-        if (!tweetArchives) {
-          return;
-        }
-        const first = tweetArchives[0];
-        if (!first) {
-          return;
-        }
-        fetchTweetStatus(first.url).then((x) => {
-          if (x === 429 || x >= 500) {
-            setMissedTweets((prev) => [...prev, nextStatusId]);
-          }
-          if (x === 404) {
-            setArchiveQueue((prev) => [...prev, [nextStatusId, 0]]);
-            setNumDeleted((prev) => prev + 1);
-          }
-          setNumStatusResponses((prev) => prev + 1);
-        });
+  const { requestsPerSecond, setRequestsPerSecond } = useFetchQueue({
+    urlQueue: tweetQueue,
+    setUrlQueue: setTweetQueue,
+    invalidateCanary: username,
+    action: (response, invalidated, curr) => {
+      if (invalidated) {
+        console.log("invalidated");
+        return;
       }
-    }, 1000 / twitterTps);
-
-    return () => {
-      clearTimeout(interval);
-    };
-  }, [twitterTps, tweetQueue]);
+      const x = response.status;
+      if (x === 429 || x >= 500) {
+        setMissedTweets((prev) => [...prev, curr]);
+      }
+      if (x === 404) {
+        setArchiveQueue((prev) => [...prev, [curr, 0]]);
+        setNumDeleted((prev) => prev + 1);
+      }
+      setNumStatusResponses((prev) => prev + 1);
+    },
+    urlAccessor: (s) => {
+      if (
+        !tweetToArchivesMapRef.current[s] ||
+        tweetToArchivesMapRef.current[s]!.length === 0
+      ) {
+        return "";
+      }
+      const url = tweetToArchivesMapRef.current[s]![0]!.url;
+      return wrapTweetUrl(url);
+    },
+  });
 
   useEffect(() => {
     const interval = setTimeout(() => {
@@ -177,7 +180,8 @@ const Home: NextPage = () => {
     reset();
     setIsLoading(true);
 
-    fetch(`/api/archive/tweets/${usernameInput.replace("@", "")}`)
+    const newUsername = usernameInput.replace("@", "");
+    fetch(`/api/archive/tweets/${newUsername}`)
       .then((response) => {
         setIsLoading(false);
         return response.json();

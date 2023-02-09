@@ -1,5 +1,4 @@
 import React, { memo } from "react";
-
 import { default as cn } from "classnames";
 
 export type TooltipProps = {

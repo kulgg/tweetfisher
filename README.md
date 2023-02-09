@@ -1,7 +1,7 @@
 <h1 align="center">TweetFisher</h1>
 
 <p align="center">
-    Next.js app that <b>finds deleted tweets</b> that have been archived by the wayback machine ([archive.org](https://web.archive.org/))
+    Next.js app that <b>finds deleted tweets</b> that have been archived by the <a href="https://web.archive.org/">wayback machine</a>
 </p>
 
 <p align="center">

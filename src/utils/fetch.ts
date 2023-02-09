@@ -27,6 +27,10 @@ const cleanUrl = (url: string) => {
   return url.replace("http://", "https://");
 };
 
+export const wrapTweetUrl = (url: string) => {
+  return `/api/twitter/${encodeURIComponent(cleanUrl(url))}`;
+};
+
 const fetchTweetStatus = async (s: string): Promise<number> => {
   const response = await fetch(
     `/api/twitter/${encodeURIComponent(cleanUrl(s))}`,
