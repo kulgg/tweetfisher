@@ -10,6 +10,7 @@ import GrayButton from "../ui/buttons/gray-button";
 import Tooltip from "../ui/tooltip";
 
 export type StickyFooterProps = {
+  accountType: string;
   numUniqueTweets: number;
   numTotalDeletedTweets: number;
   tweetStatusQueueLength: number;
@@ -23,6 +24,7 @@ export type StickyFooterProps = {
 };
 
 function StickyFooter({
+  accountType,
   numUniqueTweets,
   numTotalDeletedTweets,
   tweetStatusQueueLength,
@@ -34,11 +36,27 @@ function StickyFooter({
   handleSettingsClick,
   handleRefetchClick,
 }: StickyFooterProps) {
+  const getAccountTypeName = (accountType: string) => {
+    switch (accountType) {
+      case "active":
+        return "Active";
+      case "suspended":
+        return "Suspended";
+      case "notfound":
+        return "Nonexisting";
+      default:
+        return "Unknown";
+    }
+  };
+
   return (
     <div className="fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 rounded-md bg-gray-800 px-2 text-gray-100 lg:px-0">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
         <div className="flex items-center gap-3">
-          <Tooltip text={"Active Account"} color="gray-600">
+          <Tooltip
+            text={`${getAccountTypeName(accountType)} Account`}
+            color="gray-600"
+          >
             <div className="whitespace-nowrap bg-gradient-to-r from-emerald-200 to-rose-200 bg-clip-text text-lg font-bold text-transparent">
               @{handle}
             </div>
@@ -128,8 +146,8 @@ function StickyFooter({
             </div>
           </Tooltip>
         </div>
-        <div className="flex flex-row gap-3 text-sm"></div>
         <div className="flex items-center">
+          <div>Hey</div>
           <div>
             <GrayButton handleClick={handleSettingsClick}>
               <div className="mt-[1px] w-5">

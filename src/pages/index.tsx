@@ -32,6 +32,9 @@ export type FullDeletedTweet = {
 const Home: NextPage = () => {
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
+  const [accountType, setAccountType] = useState<
+    "active" | "suspended" | "noutfound" | null
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
   const [tweetQueue, setTweetQueue] = useState<string[]>([]);
   const [archiveQueue, setArchiveQueue] = useState<[string, number][]>([]);
@@ -63,14 +66,15 @@ const Home: NextPage = () => {
           return;
         }
         const x = response.status;
+        setNumStatusResponses((prev) => prev + 1);
         if (x === 429 || x >= 500) {
           setMissedTweets((prev) => [...prev, curr]);
+          return;
         }
         if (x === 404) {
           setArchiveQueue((prev) => [...prev, [curr, 0]]);
           setNumDeleted((prev) => prev + 1);
         }
-        setNumStatusResponses((prev) => prev + 1);
       },
       urlAccessor: (s) => {
         if (
@@ -183,9 +187,16 @@ const Home: NextPage = () => {
     }
     setUsername(usernameInput.replace("@", ""));
     reset();
-    setIsLoading(true);
 
     const newUsername = usernameInput.replace("@", "");
+    fetch(`/api/twitter/account/${newUsername}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const { accountType } = data;
+        setAccountType(accountType);
+      });
+    setIsLoading(true);
+
     fetch(`/api/archive/tweets/${newUsername}`)
       .then((response) => {
         setIsLoading(false);
@@ -198,7 +209,11 @@ const Home: NextPage = () => {
 
         setTweetToArchivesMap(groupedTweets);
         setNumUniqueTweets(Object.keys(groupedTweets).length);
-        setTweetQueue(Object.keys(groupedTweets));
+        if (accountType !== "active") {
+          setArchiveQueue(Object.keys(groupedTweets).map((x) => [x, 0]));
+        } else {
+          setTweetQueue(Object.keys(groupedTweets));
+        }
         setFullDeletedTweet([]);
       })
       .catch((err) => {
@@ -256,6 +271,7 @@ const Home: NextPage = () => {
       </div>
       {username && (
         <StickyFooter
+          accountType={accountType ?? ""}
           numUniqueTweets={numUniqueTweets}
           numTotalDeletedTweets={numDeleted}
           tweetStatusQueueLength={tweetQueue.length}
