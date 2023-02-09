@@ -196,7 +196,6 @@ const Home: NextPage = () => {
         console.error(err);
         setIsLoading(false);
       });
-    // archiveQuery.refetch();
   };
 
   return (
@@ -240,6 +239,9 @@ const Home: NextPage = () => {
         <div className="mt-16"></div>
         {isLoading && (
           <LoadingMessage message="Searching for archived tweets" />
+        )}
+        {username && tweetQueue.length > 0 && (
+          <LoadingMessage message={`Checking status of tweets`} />
         )}
         {username && <DeletedTweets tweets={fullDeletedTweet} />}
       </div>

@@ -1,6 +1,14 @@
 <h1 align="center">TweetFisher</h1>
 
-Uncover the Lost Gems: Next.js app that **finds deleted tweets** that have been archived by the wayback machine ([archive.org](https://web.archive.org/))
+<p align="center">
+    Next.js app that **finds deleted tweets** that have been archived by the wayback machine ([archive.org](https://web.archive.org/))
+</p>
+
+<p align="center">
+  <a href="#getting-started"><strong>Getting Started</strong></a> ·
+  <a href="#faq"><strong>FAQ</strong></a> ·
+</p>
+<br/>
 
 ## Getting started
 
