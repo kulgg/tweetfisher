@@ -240,11 +240,6 @@ const Home: NextPage = () => {
       </motion.div>
       <div className="flex flex-col items-center">
         <div className="mt-16"></div>
-        {username && (
-          <div className="mb-3 mr-auto rounded-lg bg-gray-800 py-1 px-2 text-lg text-zinc-300">
-            @{username}
-          </div>
-        )}
         {archiveQuery.isFetching && (
           <LoadingMessage message="Searching for archived tweets" />
         )}

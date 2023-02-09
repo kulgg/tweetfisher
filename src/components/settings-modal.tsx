@@ -32,6 +32,12 @@ export default function SettingsModal({
     };
   }, [isVisible]);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSave(twitterTpsInput, archiveTpsInput);
+    setIsVisible(false);
+  };
+
   return (
     <Transition.Root show={isVisible} as={Fragment}>
       <Dialog
@@ -72,58 +78,58 @@ export default function SettingsModal({
                     >
                       Settings
                     </Dialog.Title>
-                    <div className="mb-8 mt-6 text-left">
-                      <fieldset>
-                        <legend className="block text-sm font-medium text-rose-200">
-                          Requests per second
-                        </legend>
-                        <div className="flex w-full items-center justify-center gap-4">
-                          <div className="relative mt-3 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
-                            <Tooltip text="Too high = 429 responses 🫥">
-                              <label
-                                htmlFor="twittertps"
-                                className="absolute -top-2 left-2 -mt-px inline-block bg-gray-800 px-1 text-xs font-medium text-gray-300"
-                              >
-                                Twitter.com
-                              </label>
-                              <input
-                                type="text"
-                                name="twittertps"
-                                id="twittertps"
-                                data-tooltip-target="twittertps-tooltip"
-                                className="block w-full border-0 bg-gray-800 p-1 text-gray-200 placeholder-gray-500 focus:ring-0 sm:text-base"
-                                placeholder="1.0"
-                                value={twitterTpsInput}
-                                autoComplete="off"
-                                onChange={(e) =>
-                                  setTwitterTpsInput(e.target.value)
-                                }
-                              />
-                            </Tooltip>
-                          </div>
-                          <div className="relative mt-3 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
+                    <form
+                      className="mb-8 mt-6 text-left"
+                      onSubmit={handleSubmit}
+                    >
+                      <legend className="block text-sm font-medium text-rose-200">
+                        Requests per second
+                      </legend>
+                      <div className="flex w-full items-center justify-center gap-4">
+                        <div className="relative mt-3 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
+                          <Tooltip text="Too high = 429 responses 🫥">
                             <label
-                              htmlFor="archivetps"
-                              className="absolute -top-2 left-2 -mt-px inline-block bg-gray-800 px-1 text-xs font-medium text-gray-300"
+                              htmlFor="twittertps"
+                              className="absolute -top-4 left-0 -mt-px inline-block bg-gray-800 px-1 text-xs font-medium text-gray-300"
                             >
-                              Archive.org
+                              Twitter.com
                             </label>
                             <input
                               type="text"
-                              name="archivetps"
-                              id="archivetps"
+                              name="twittertps"
+                              id="twittertps"
+                              data-tooltip-target="twittertps-tooltip"
                               className="block w-full border-0 bg-gray-800 p-1 text-gray-200 placeholder-gray-500 focus:ring-0 sm:text-base"
                               placeholder="1.0"
-                              value={archiveTpsInput}
+                              value={twitterTpsInput}
                               autoComplete="off"
                               onChange={(e) =>
-                                setArchiveTpsInput(e.target.value)
+                                setTwitterTpsInput(e.target.value)
                               }
                             />
-                          </div>
+                          </Tooltip>
                         </div>
-                      </fieldset>
-                    </div>
+                        <div className="relative mt-3 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
+                          <label
+                            htmlFor="archivetps"
+                            className="absolute -top-2 left-2 -mt-px inline-block bg-gray-800 px-1 text-xs font-medium text-gray-300"
+                          >
+                            Archive.org
+                          </label>
+                          <input
+                            type="text"
+                            name="archivetps"
+                            id="archivetps"
+                            className="block w-full border-0 bg-gray-800 p-1 text-gray-200 placeholder-gray-500 focus:ring-0 sm:text-base"
+                            placeholder="1.0"
+                            value={archiveTpsInput}
+                            autoComplete="off"
+                            onChange={(e) => setArchiveTpsInput(e.target.value)}
+                          />
+                        </div>
+                        <button className="hidden" type="submit"></button>
+                      </div>
+                    </form>
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

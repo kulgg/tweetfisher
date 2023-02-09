@@ -39,6 +39,7 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 - [ ] Consider account state (Active, Inactive, Suspended)
 - [ ] Adaptive throttling
 - [ ] Parse quote tweets
+- [ ] System light/dark mode
 
 ### Backlog
 
@@ -59,7 +60,3 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 - [x] Validate that urls are of an actual status
 - [x] Queues should instantly use updated TPS values
 - [x] Fix Index state mess
-
-```
-
-```
