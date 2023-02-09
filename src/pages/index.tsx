@@ -30,7 +30,6 @@ export type FullDeletedTweet = {
 };
 
 const Home: NextPage = () => {
-  const [archiveTps, setArchiveTps] = useState(3.0);
   const [usernameInput, setUsernameInput] = useState("");
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -105,50 +104,56 @@ const Home: NextPage = () => {
     setMissedTweets([]);
   };
 
-  useEffect(() => {
-    const interval = setTimeout(() => {
-      if (archiveQueue.length > 0) {
-        const [nextStatus, i] = archiveQueue[0]!;
-        if (i > 0) {
-          console.log("Refetching", nextStatus, i);
-        }
-        setArchiveQueue((prev) => [...prev.slice(1)]);
-        if (!nextStatus) {
+  const { requestsPerSecond: archiveTps, setRequestsPerSecond: setArchiveTps } =
+    useFetchQueue({
+      urlQueue: archiveQueue,
+      setUrlQueue: setArchiveQueue,
+      invalidateCanary: username,
+      action: (response, invalidated, curr) => {
+        if (invalidated) {
+          console.log("invalidated archive");
           return;
         }
-        const next = tweetToArchivesMap[nextStatus]![i];
-        if (!next) {
-          console.log("No next", nextStatus, i);
+        const [statusId, i] = curr;
+        if (
+          !tweetToArchivesMapRef.current[statusId] ||
+          tweetToArchivesMapRef.current[statusId]!.length <= i
+        ) {
           return;
         }
-        fetch(
-          `/api/archive/tweet/${next.archiveDate}/${encodeURIComponent(
-            next.url
-          )}`
-        )
-          .then((x) => x.json())
-          .then((x) => {
-            setNumArchiveResponses((prev) => prev + 1);
-            if (x !== "Server error") {
-              setFullDeletedTweet((prev) => [
-                ...prev,
-                {
-                  ...x,
-                  url: `https://web.archive.org/web/${next.archiveDate}/${next.url}`,
-                  handle: username,
-                },
-              ]);
-            } else {
-              setArchiveQueue((prev) => [[nextStatus, i + 1], ...prev]);
-            }
-          });
-      }
-    }, 1000 / archiveTps);
+        const next = tweetToArchivesMapRef.current[statusId]![i]!;
 
-    return () => {
-      clearTimeout(interval);
-    };
-  }, [archiveTps, archiveQueue]);
+        response.json().then((x) => {
+          setNumArchiveResponses((prev) => prev + 1);
+          if (x !== "Server error") {
+            setFullDeletedTweet((prev) => [
+              ...prev,
+              {
+                ...x,
+                url: `https://web.archive.org/web/${next.archiveDate}/${next.url}`,
+                handle: username,
+              },
+            ]);
+          } else {
+            setArchiveQueue((prev) => [[statusId, i + 1], ...prev]);
+          }
+        });
+      },
+      urlAccessor: (c) => {
+        const [statusId, i] = c;
+        if (
+          !tweetToArchivesMapRef.current[statusId] ||
+          tweetToArchivesMapRef.current[statusId]!.length <= i
+        ) {
+          return "";
+        }
+        const next = tweetToArchivesMapRef.current[statusId]![i]!;
+
+        return `/api/archive/tweet/${next.archiveDate}/${encodeURIComponent(
+          next.url
+        )}`;
+      },
+    });
 
   // console.log(usernameInput);
   // console.log("data", archiveQuery.data);
