@@ -1,20 +1,14 @@
 import { motion } from "framer-motion";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import next, { type NextPage } from "next";
+import { type NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
-import DeletedTweets from "../components/deleted-tweets";
+import React, { useState } from "react";
 import Layout from "../components/layout/layout";
-import StickyFooter from "../components/layout/sticky-footer";
-import LoadingMessage from "../components/loading-message";
 import SettingsModal from "../components/settings-modal";
 import StarOnGithubButton from "../components/ui/buttons/star-github";
 import UsernameForm from "../components/username-form";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
-import useFetchQueue from "../lib/hooks/use-fetch-queue";
-import fetchTweetStatus, { wrapTweetUrl } from "../utils/fetch";
-import { groupByUrl, ITweetMap, validUrlsFilter } from "../utils/filter";
 
 export type DeletedTweet = {
   archiveDate: string;

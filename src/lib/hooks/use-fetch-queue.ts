@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export type UseFetchQueueProps<T> = {
   queue: T[];

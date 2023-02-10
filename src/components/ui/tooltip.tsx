@@ -1,5 +1,5 @@
-import React, { memo } from "react";
 import { default as cn } from "classnames";
+import React, { memo } from "react";
 
 export type TooltipProps = {
   children: React.ReactNode;
