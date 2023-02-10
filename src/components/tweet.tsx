@@ -78,7 +78,7 @@ function ArchivedTweet({
       </div>
       {replyTo && (
         <div className="mt-3 ml-1 text-gray-500">
-          {replyToMessage}{" "}
+          {"replying to "}
           {replyToHandles.map((handle) => (
             <span>
               <a

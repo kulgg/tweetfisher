@@ -38,7 +38,7 @@ export default async function handler(
   }
 
   const webArchiveUrl = `https://web.archive.org/web/${date}/${url}`;
-  const result = await fetchPlus(
+  const response = await fetchPlus(
     webArchiveUrl,
     {
       headers: {
@@ -49,24 +49,40 @@ export default async function handler(
     5
   );
 
-  if (result) {
-    let text = await result.text();
+  if (response) {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      const json = await response.json();
 
-    let containerHtml = firstParser.getContainerHtml(text);
-    if (containerHtml !== "") {
-      const tweetObj = firstParser.getTweetObj(containerHtml);
+      const tweetObj = {
+        tweet: json.extended_tweet?.full_text ?? json.text,
+        username: json.user.name,
+        date: json.created_at,
+        avatarUrl: json.user.profile_image_url_https,
+        replyTo: `replying to @${json.in_reply_to_screen_name}`,
+        imageUrls:
+          json.entities?.media?.map((x: any) => x.media_url_https) ?? [],
+      };
       return handleResponse(res, tweetObj, webArchiveUrl);
-    }
-    console.log("First Parser failed");
+    } else {
+      let text = await response.text();
 
-    containerHtml = secondParser.getContainerHtml(text);
-    if (containerHtml !== "") {
-      const tweetObj = secondParser.getTweetObj(containerHtml);
-      return handleResponse(res, tweetObj, webArchiveUrl);
-    }
+      let containerHtml = firstParser.getContainerHtml(text);
+      if (containerHtml !== "") {
+        const tweetObj = firstParser.getTweetObj(containerHtml);
+        return handleResponse(res, tweetObj, webArchiveUrl);
+      }
+      console.log("First Parser failed");
 
-    const msg = `[${webArchiveUrl}]\nAll parsers failed\n\n`;
-    fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
+      containerHtml = secondParser.getContainerHtml(text);
+      if (containerHtml !== "") {
+        const tweetObj = secondParser.getTweetObj(containerHtml);
+        return handleResponse(res, tweetObj, webArchiveUrl);
+      }
+
+      const msg = `[${webArchiveUrl}]\nAll parsers failed\n\n`;
+      fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
+    }
   }
 
   const msg = `[${webArchiveUrl}]\nNo result\n\n`;

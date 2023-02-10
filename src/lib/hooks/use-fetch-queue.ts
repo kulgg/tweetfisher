@@ -20,7 +20,6 @@ const useFetchQueue = <T>({
   const queueRef = useRef(urlQueue);
   const canaryRef = useRef(invalidateCanary);
   const requestsPerSecondRef = useRef(requestsPerSecond);
-  console.log("rqps", requestsPerSecond);
 
   useEffect(() => {
     queueRef.current = urlQueue;

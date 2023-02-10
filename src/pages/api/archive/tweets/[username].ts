@@ -11,7 +11,7 @@ export default async function handler(
     return res.status(400).json("No username");
   }
 
-  const webArchiveUrl = `https://web.archive.org/cdx/search/cdx?url=twitter.com/${username}/status&matchType=prefix&filter=statuscode:200&mimetype:text/html`;
+  const webArchiveUrl = `https://web.archive.org/cdx/search/cdx?url=twitter.com/${username}/status&matchType=prefix&filter=!statuscode:302`;
   console.log("url", webArchiveUrl);
   const result = await fetch(webArchiveUrl, {
     headers: {
