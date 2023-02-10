@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { type NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../components/layout/layout";
 import SettingsModal from "../components/settings-modal";
 import StarOnGithubButton from "../components/ui/buttons/star-github";
@@ -41,10 +41,12 @@ export const handleSettingsSave = (setTwitterTps: any, setArchiveTps: any) => {
 
 export const twitterTpsAtom = atomWithStorage("twitterTps", 0.99);
 export const archiveTpsAtom = atomWithStorage("archiveTps", 0.99);
+export const animatedOnce = atom(false);
 
 const Home: NextPage = () => {
   const [twitterTps, setTwitterTps] = useAtom(twitterTpsAtom);
   const [archiveTps, setArchiveTps] = useAtom(archiveTpsAtom);
+  const [isAnimatedOnce, setIsAnimatedOnce] = useAtom(animatedOnce);
   const router = useRouter();
   const [usernameInput, setUsernameInput] = useState("");
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
@@ -62,10 +64,14 @@ const Home: NextPage = () => {
     router.push(`/${newUsername}`);
   };
 
+  useEffect(() => {
+    setIsAnimatedOnce(true);
+  }, []);
+
   return (
     <Layout>
       <motion.div
-        initial="hidden"
+        initial={isAnimatedOnce ? "show" : "hidden"}
         whileInView="show"
         animate="show"
         viewport={{ once: true }}
