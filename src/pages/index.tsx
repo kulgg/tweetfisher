@@ -58,8 +58,8 @@ const Home: NextPage = () => {
 
   const { requestsPerSecond: twitterTps, setRequestsPerSecond: setTwitterTps } =
     useFetchQueue({
-      urlQueue: tweetQueue,
-      setUrlQueue: setTweetQueue,
+      queue: tweetQueue,
+      setQueue: setTweetQueue,
       invalidateCanary: username,
       action: (response, invalidated, curr) => {
         if (invalidated) {
@@ -111,8 +111,8 @@ const Home: NextPage = () => {
 
   const { requestsPerSecond: archiveTps, setRequestsPerSecond: setArchiveTps } =
     useFetchQueue({
-      urlQueue: archiveQueue,
-      setUrlQueue: setArchiveQueue,
+      queue: archiveQueue,
+      setQueue: setArchiveQueue,
       invalidateCanary: username,
       action: (response, invalidated, curr) => {
         if (invalidated) {
