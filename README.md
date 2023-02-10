@@ -1,3 +1,5 @@
+![TweetFisher Gif](https://github.com/kulgg/tweetfisher/blob/main/public/hero.gif?raw=true)
+
 <h1 align="center">TweetFisher</h1>
 
 <p align="center">
