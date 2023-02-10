@@ -35,7 +35,8 @@ const Home: NextPage = () => {
   const [accountType, setAccountType] = useState<
     "active" | "suspended" | "noutfound" | null
   >(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingTweets, setIsLoadingTweets] = useState(false);
+  const [isLoadingAccounType, setIsLoadingAccounType] = useState(false);
   const [tweetQueue, setTweetQueue] = useState<string[]>([]);
   const [archiveQueue, setArchiveQueue] = useState<[string, number][]>([]);
   const [missedTweets, setMissedTweets] = useState<string[]>([]);
@@ -187,38 +188,40 @@ const Home: NextPage = () => {
     }
     setUsername(usernameInput.replace("@", ""));
     reset();
-
     const newUsername = usernameInput.replace("@", "");
+    setIsLoadingAccounType(true);
+
     fetch(`/api/twitter/account/${newUsername}`)
       .then((response) => response.json())
       .then((data) => {
+        setIsLoadingAccounType(false);
         const { accountType } = data;
         setAccountType(accountType);
-      });
-    setIsLoading(true);
 
-    fetch(`/api/archive/tweets/${newUsername}`)
-      .then((response) => {
-        setIsLoading(false);
-        return response.json();
-      })
-      .then((data) => {
-        const groupedTweets: ITweetMap = data
-          .filter(validUrlsFilter)
-          .reduce(groupByUrl, {});
+        setIsLoadingTweets(true);
+        fetch(`/api/archive/tweets/${newUsername}`)
+          .then((response) => {
+            setIsLoadingTweets(false);
+            return response.json();
+          })
+          .then((data) => {
+            const groupedTweets: ITweetMap = data
+              .filter(validUrlsFilter)
+              .reduce(groupByUrl, {});
 
-        setTweetToArchivesMap(groupedTweets);
-        setNumUniqueTweets(Object.keys(groupedTweets).length);
-        if (accountType !== "active") {
-          setArchiveQueue(Object.keys(groupedTweets).map((x) => [x, 0]));
-        } else {
-          setTweetQueue(Object.keys(groupedTweets));
-        }
-        setFullDeletedTweet([]);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
+            setTweetToArchivesMap(groupedTweets);
+            setNumUniqueTweets(Object.keys(groupedTweets).length);
+            if (accountType !== "active") {
+              setArchiveQueue(Object.keys(groupedTweets).map((x) => [x, 0]));
+            } else {
+              setTweetQueue(Object.keys(groupedTweets));
+            }
+            setFullDeletedTweet([]);
+          })
+          .catch((err) => {
+            console.error(err);
+            setIsLoadingTweets(false);
+          });
       });
   };
 
@@ -261,7 +264,10 @@ const Home: NextPage = () => {
       </motion.div>
       <div className="flex flex-col items-center">
         <div className="mt-16"></div>
-        {isLoading && (
+        {isLoadingAccounType && (
+          <LoadingMessage message="Loading account status" />
+        )}
+        {isLoadingTweets && (
           <LoadingMessage message="Searching for archived tweets" />
         )}
         {username && tweetQueue.length > 0 && (

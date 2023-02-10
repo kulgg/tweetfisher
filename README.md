@@ -45,6 +45,7 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 ## Additional Features
 
 - [x] Consider account state (Active, Inactive, Suspended)
+- [ ] Include all possible archived tweets
 - [ ] Parse quote tweets
 - [ ] Adaptive throttling
 - [ ] System light/dark mode

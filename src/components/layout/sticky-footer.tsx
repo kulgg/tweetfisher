@@ -147,7 +147,6 @@ function StickyFooter({
           </Tooltip>
         </div>
         <div className="flex items-center">
-          <div>Hey</div>
           <div>
             <GrayButton handleClick={handleSettingsClick}>
               <div className="mt-[1px] w-5">
