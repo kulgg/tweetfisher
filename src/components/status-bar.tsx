@@ -5,11 +5,11 @@ import {
   SignalSlashIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import LoadingSpin from "../loading-spin";
-import GrayButton from "../ui/buttons/gray-button";
-import Tooltip from "../ui/tooltip";
+import LoadingSpin from "./loading-spin";
+import GrayButton from "./ui/buttons/gray-button";
+import Tooltip from "./ui/tooltip";
 
-export type StickyFooterProps = {
+export type StatusBarProps = {
   accountType: string;
   numUniqueTweets: number;
   numTotalDeletedTweets: number;
@@ -23,7 +23,7 @@ export type StickyFooterProps = {
   handleRefetchClick: () => void;
 };
 
-function StickyFooter({
+function StatusBar({
   accountType,
   numUniqueTweets,
   numTotalDeletedTweets,
@@ -35,7 +35,7 @@ function StickyFooter({
   handle,
   handleSettingsClick,
   handleRefetchClick,
-}: StickyFooterProps) {
+}: StatusBarProps) {
   const getAccountTypeName = (accountType: string) => {
     switch (accountType) {
       case "active":
@@ -161,4 +161,4 @@ function StickyFooter({
   );
 }
 
-export default StickyFooter;
+export default StatusBar;

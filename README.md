@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="#getting-started"><strong>Getting Started</strong></a> ·
-  <a href="#faq"><strong>FAQ</strong></a> ·
+  <a href="#faq"><strong>FAQ</strong></a>
 </p>
 <br/>
 

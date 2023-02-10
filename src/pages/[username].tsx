@@ -11,7 +11,7 @@ import {
 } from ".";
 import DeletedTweets from "../components/deleted-tweets";
 import Layout from "../components/layout/layout";
-import StickyFooter from "../components/layout/sticky-footer";
+import StatusBar from "../components/status-bar";
 import LoadingMessage from "../components/loading-message";
 import SettingsModal from "../components/settings-modal";
 import { FADE_DOWN_ANIMATION } from "../lib/animations";
@@ -239,7 +239,7 @@ const ResultsPage: NextPage = () => {
         {username && <DeletedTweets tweets={fullDeletedTweet} />}
       </div>
       {username && (
-        <StickyFooter
+        <StatusBar
           accountType={accountType ?? ""}
           numUniqueTweets={numUniqueTweets}
           numTotalDeletedTweets={numDeleted}

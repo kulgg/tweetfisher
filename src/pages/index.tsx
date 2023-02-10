@@ -39,8 +39,8 @@ export const handleSettingsSave = (setTwitterTps: any, setArchiveTps: any) => {
   };
 };
 
-export const twitterTpsAtom = atomWithStorage("twitterTps", 0.9);
-export const archiveTpsAtom = atomWithStorage("archiveTps", 0.9);
+export const twitterTpsAtom = atomWithStorage("twitterTps", 0.99);
+export const archiveTpsAtom = atomWithStorage("archiveTps", 0.99);
 
 const Home: NextPage = () => {
   const [twitterTps, setTwitterTps] = useAtom(twitterTpsAtom);
