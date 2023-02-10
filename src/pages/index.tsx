@@ -1,5 +1,8 @@
 import { motion } from "framer-motion";
+import { useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import next, { type NextPage } from "next";
+import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import DeletedTweets from "../components/deleted-tweets";
 import Layout from "../components/layout/layout";
@@ -29,67 +32,8 @@ export type FullDeletedTweet = {
   imageUrls: string[];
 };
 
-const Home: NextPage = () => {
-  const [usernameInput, setUsernameInput] = useState("");
-  const [username, setUsername] = useState("");
-  const [accountType, setAccountType] = useState<
-    "active" | "suspended" | "noutfound" | null
-  >(null);
-  const [isLoadingTweets, setIsLoadingTweets] = useState(false);
-  const [isLoadingAccounType, setIsLoadingAccounType] = useState(false);
-  const [tweetQueue, setTweetQueue] = useState<string[]>([]);
-  const [archiveQueue, setArchiveQueue] = useState<[string, number][]>([]);
-  const [missedTweets, setMissedTweets] = useState<string[]>([]);
-  const [tweetToArchivesMap, setTweetToArchivesMap] = useState<ITweetMap>({});
-  const tweetToArchivesMapRef = useRef(tweetToArchivesMap);
-  const [numUniqueTweets, setNumUniqueTweets] = useState(0);
-  const [numStatusResponses, setNumStatusResponses] = useState(0);
-  const [numArchiveResponses, setNumArchiveResponses] = useState(0);
-  const [numDeleted, setNumDeleted] = useState(0);
-  const [fullDeletedTweet, setFullDeletedTweet] = useState<FullDeletedTweet[]>(
-    []
-  );
-
-  useEffect(() => {
-    tweetToArchivesMapRef.current = tweetToArchivesMap;
-  }, [tweetToArchivesMap]);
-
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
-
-  const { requestsPerSecond: twitterTps, setRequestsPerSecond: setTwitterTps } =
-    useFetchQueue({
-      queue: tweetQueue,
-      setQueue: setTweetQueue,
-      invalidateCanary: username,
-      action: (response, invalidated, curr) => {
-        if (invalidated) {
-          console.log("invalidated");
-          return;
-        }
-        const x = response.status;
-        setNumStatusResponses((prev) => prev + 1);
-        if (x === 429 || x >= 500) {
-          setMissedTweets((prev) => [...prev, curr]);
-          return;
-        }
-        if (x === 404) {
-          setArchiveQueue((prev) => [...prev, [curr, 0]]);
-          setNumDeleted((prev) => prev + 1);
-        }
-      },
-      urlAccessor: (s) => {
-        if (
-          !tweetToArchivesMapRef.current[s] ||
-          tweetToArchivesMapRef.current[s]!.length === 0
-        ) {
-          return "";
-        }
-        const url = tweetToArchivesMapRef.current[s]![0]!.url;
-        return wrapTweetUrl(url);
-      },
-    });
-
-  const handleSave = (twitterTpsInput: string, archiveTpsInput: string) => {
+export const handleSettingsSave = (setTwitterTps: any, setArchiveTps: any) => {
+  return (twitterTpsInput: string, archiveTpsInput: string) => {
     const twitterTpsFloat = parseFloat(twitterTpsInput);
     if (!isNaN(twitterTpsFloat)) {
       setTwitterTps(twitterTpsFloat);
@@ -99,86 +43,20 @@ const Home: NextPage = () => {
       setArchiveTps(archiveTpsFloat);
     }
   };
+};
+
+export const twitterTpsAtom = atomWithStorage("twitterTps", 0.9);
+export const archiveTpsAtom = atomWithStorage("archiveTps", 0.9);
+
+const Home: NextPage = () => {
+  const [twitterTps, setTwitterTps] = useAtom(twitterTpsAtom);
+  const [archiveTps, setArchiveTps] = useAtom(archiveTpsAtom);
+  const router = useRouter();
+  const [usernameInput, setUsernameInput] = useState("");
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsernameInput(e.currentTarget.value);
-  };
-
-  const refetchMissed = () => {
-    setTweetQueue((prev) => [...prev, ...missedTweets]);
-    setMissedTweets([]);
-  };
-
-  const { requestsPerSecond: archiveTps, setRequestsPerSecond: setArchiveTps } =
-    useFetchQueue({
-      queue: archiveQueue,
-      setQueue: setArchiveQueue,
-      invalidateCanary: username,
-      action: (response, invalidated, curr) => {
-        if (invalidated) {
-          console.log("invalidated archive");
-          return;
-        }
-        const [statusId, i] = curr;
-        if (
-          !tweetToArchivesMapRef.current[statusId] ||
-          tweetToArchivesMapRef.current[statusId]!.length <= i
-        ) {
-          return;
-        }
-        const next = tweetToArchivesMapRef.current[statusId]![i]!;
-
-        response.json().then((x) => {
-          setNumArchiveResponses((prev) => prev + 1);
-          if (x !== "Server error") {
-            setFullDeletedTweet((prev) => [
-              ...prev,
-              {
-                ...x,
-                url: `https://web.archive.org/web/${next.archiveDate}/${next.url}`,
-                handle: username,
-              },
-            ]);
-          } else {
-            setArchiveQueue((prev) => [[statusId, i + 1], ...prev]);
-          }
-        });
-      },
-      urlAccessor: (c) => {
-        const [statusId, i] = c;
-        if (
-          !tweetToArchivesMapRef.current[statusId] ||
-          tweetToArchivesMapRef.current[statusId]!.length <= i
-        ) {
-          return "";
-        }
-        const next = tweetToArchivesMapRef.current[statusId]![i]!;
-
-        return `/api/archive/tweet/${next.archiveDate}/${encodeURIComponent(
-          next.url
-        )}`;
-      },
-    });
-
-  // console.log(usernameInput);
-  // console.log("data", archiveQuery.data);
-  // console.log("valid", tweetQueue);
-  // console.log("tweetToArchivesMap", tweetToArchivesMap);
-  // console.log("fullDeleted", fullDeletedTweet);
-  // console.log("step", step);
-
-  const reset = () => {
-    setUsernameInput("");
-    setFullDeletedTweet([]);
-    setTweetQueue([]);
-    setMissedTweets([]);
-    setArchiveQueue([]);
-    setTweetToArchivesMap({});
-    setNumStatusResponses(0);
-    setNumDeleted(0);
-    setNumUniqueTweets(0);
-    setNumStatusResponses(0);
-    setNumArchiveResponses(0);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -186,43 +64,8 @@ const Home: NextPage = () => {
     if (usernameInput.length === 0) {
       return;
     }
-    setUsername(usernameInput.replace("@", ""));
-    reset();
     const newUsername = usernameInput.replace("@", "");
-    setIsLoadingAccounType(true);
-
-    fetch(`/api/twitter/account/${newUsername}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setIsLoadingAccounType(false);
-        const { accountType } = data;
-        setAccountType(accountType);
-
-        setIsLoadingTweets(true);
-        fetch(`/api/archive/tweets/${newUsername}`)
-          .then((response) => {
-            setIsLoadingTweets(false);
-            return response.json();
-          })
-          .then((data) => {
-            const groupedTweets: ITweetMap = data
-              .filter(validUrlsFilter)
-              .reduce(groupByUrl, {});
-
-            setTweetToArchivesMap(groupedTweets);
-            setNumUniqueTweets(Object.keys(groupedTweets).length);
-            if (accountType !== "active") {
-              setArchiveQueue(Object.keys(groupedTweets).map((x) => [x, 0]));
-            } else {
-              setTweetQueue(Object.keys(groupedTweets));
-            }
-            setFullDeletedTweet([]);
-          })
-          .catch((err) => {
-            console.error(err);
-            setIsLoadingTweets(false);
-          });
-      });
+    router.push(`/${newUsername}`);
   };
 
   return (
@@ -262,40 +105,12 @@ const Home: NextPage = () => {
           />
         </motion.div>
       </motion.div>
-      <div className="flex flex-col items-center">
-        <div className="mt-16"></div>
-        {isLoadingAccounType && (
-          <LoadingMessage message="Loading account status" />
-        )}
-        {isLoadingTweets && (
-          <LoadingMessage message="Searching for archived tweets" />
-        )}
-        {username && tweetQueue.length > 0 && (
-          <LoadingMessage message={`Checking status of tweets`} />
-        )}
-        {username && <DeletedTweets tweets={fullDeletedTweet} />}
-      </div>
-      {username && (
-        <StickyFooter
-          accountType={accountType ?? ""}
-          numUniqueTweets={numUniqueTweets}
-          numTotalDeletedTweets={numDeleted}
-          tweetStatusQueueLength={tweetQueue.length}
-          archiveQueueLength={archiveQueue.length}
-          numMissedTweetStati={missedTweets.length}
-          numStatusResponses={numStatusResponses}
-          numArchiveResponses={numArchiveResponses}
-          handleRefetchClick={refetchMissed}
-          handle={username}
-          handleSettingsClick={() => setIsSettingsModalVisible(true)}
-        />
-      )}
       <SettingsModal
         isVisible={isSettingsModalVisible}
         setIsVisible={setIsSettingsModalVisible}
         twitterTps={twitterTps}
         archiveTps={archiveTps}
-        handleSave={handleSave}
+        handleSave={handleSettingsSave(setTwitterTps, setArchiveTps)}
       />
     </Layout>
   );

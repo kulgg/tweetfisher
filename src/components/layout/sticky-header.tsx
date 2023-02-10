@@ -26,7 +26,7 @@ function Header() {
         <div className="flex items-center gap-5">
           <div className="w-1 border-r border-gray-300"></div>
           <a
-            className="flex items-center rounded-full p-2 hover:bg-gray-700"
+            className="flex items-center rounded-full p-2 hover:bg-gray-700 active:scale-95"
             href="https://github.com/kulgg/tweetfisher"
             target="_blank"
             rel="noopener noreferrer"

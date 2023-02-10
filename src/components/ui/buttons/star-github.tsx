@@ -7,7 +7,7 @@ export default function StarOnGithubButton({ href }: StarOnGithubButtonProps) {
     <a
       href={href}
       target="_blank"
-      className="group my-auto flex h-8 items-center justify-center gap-1 rounded-3xl border border-gray-500 bg-gradient-to-tl from-slate-900 via-purple-900 to-slate-900 px-3 py-1 text-sm text-slate-200 shadow-sm shadow-gray-300 hover:border-gray-300 hover:delay-75 active:scale-105"
+      className="group my-auto flex h-8 items-center justify-center gap-1 rounded-3xl border border-gray-500 bg-gradient-to-tl from-slate-900 via-purple-900 to-slate-900 px-3 py-1 text-sm text-slate-200 shadow-sm shadow-gray-300 hover:border-gray-300 hover:delay-75 active:scale-95"
     >
       <div className="mt-[1px] w-6">
         <svg

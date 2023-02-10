@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from "react";
 export type UseFetchQueueProps<T> = {
   queue: T[];
   setQueue: React.Dispatch<React.SetStateAction<T[]>>;
+  requestsPerSecond: number;
+  setRequestsPerSecond: React.Dispatch<React.SetStateAction<number>>;
   invalidateCanary: string;
   urlAccessor: (t: T) => string;
   action: (response: Response, invalidates: boolean, current: T) => void;
@@ -11,11 +13,12 @@ export type UseFetchQueueProps<T> = {
 const useFetchQueue = <T>({
   queue,
   setQueue,
+  requestsPerSecond,
+  setRequestsPerSecond,
   invalidateCanary,
   urlAccessor,
   action,
 }: UseFetchQueueProps<T>) => {
-  const [requestsPerSecond, setRequestsPerSecond] = useState(1);
   const intervalId = useRef<string | NodeJS.Timer | number | null>(null);
   const queueRef = useRef(queue);
   const canaryRef = useRef(invalidateCanary);
@@ -70,11 +73,6 @@ const useFetchQueue = <T>({
       intervalId.current = null;
     };
   }, []);
-
-  return {
-    requestsPerSecond,
-    setRequestsPerSecond,
-  };
 };
 
 export default useFetchQueue;
