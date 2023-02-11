@@ -1,4 +1,4 @@
-<img width="1277" alt="image" src="https://user-images.githubusercontent.com/75735874/218157255-a2a5d6ae-f871-41c0-95de-76b7956fd6a0.png">
+<img width="1277" alt="image" src="https://github.com/kulgg/tweetfisher/blob/main/public/hero.gif?raw=true">
 
 <h1 align="center">TweetFisher</h1>
 
