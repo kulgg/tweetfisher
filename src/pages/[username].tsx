@@ -50,6 +50,10 @@ const ResultsPage: NextPage = () => {
 
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
+  if (username === undefined || typeof username !== "string") {
+    return <div>Wtf man</div>;
+  }
+
   useFetchQueue({
     queue: tweetQueue,
     setQueue: setTweetQueue,
@@ -199,10 +203,6 @@ const ResultsPage: NextPage = () => {
       invalidated = true;
     };
   }, [isError]);
-
-  if (username === undefined || typeof username !== "string") {
-    return <div>Wtf man</div>;
-  }
 
   return (
     <Layout>
