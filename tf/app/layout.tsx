@@ -27,7 +27,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("font-sans", inter.variable, clash.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div>
+          <div className="container">
+            <SiteHeader />
             <div>{children}</div>
           </div>
         </ThemeProvider>
