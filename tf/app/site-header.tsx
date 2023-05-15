@@ -26,7 +26,7 @@ function SiteHeader() {
         >
           <Button
             className="flex items-center gap-1"
-            variant={"default"}
+            variant={"outline"}
             size="sm"
           >
             <Icons.gitHub className="w-5 h-5" /> Star on GitHub
