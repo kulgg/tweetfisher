@@ -1,6 +1,3 @@
-import { ModeToggle } from "@/components/mode-toggle";
-import Image from "next/image";
-import SiteHeader from "./site-header";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
