@@ -2,6 +2,7 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SettingsDialog } from "./SettingsDialog";
 
 export default function Home() {
   return (
@@ -32,13 +33,7 @@ export default function Home() {
             <div className="h-12 border-r-2 dark:border-r-gray-500 border-r-gray-300"></div>
             <div>jojo</div>
           </div>
-          <Button
-            className="flex gap-1 items-center"
-            variant={"default"}
-            size="sm"
-          >
-            <Icons.settings className="w-4 h-4" /> Settings
-          </Button>
+          <SettingsDialog />
         </div>
       </footer>
     </main>
