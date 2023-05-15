@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { StyleSwitcher } from "@/components/style-switcher";
 import { ThemeProvider } from "@/components/theme-provider";
-import SiteHeader from "./site-header";
+import SiteHeader from "./SiteHeader";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });

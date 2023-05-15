@@ -19,13 +19,9 @@ function SiteHeader() {
         <p className="font-clash">TweetFisher</p>
       </Link>
       <nav className="flex gap-2 items-center">
-        <a
-          className="flex items-center gap-2"
-          href="https://github.com/kulgg/tweetfisher"
-          target="_blank"
-        >
+        <a href="https://github.com/kulgg/tweetfisher" target="_blank">
           <Button
-            className="flex items-center gap-1"
+            className="flex items-center gap-2"
             variant={"outline"}
             size="sm"
           >
