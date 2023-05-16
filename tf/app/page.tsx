@@ -1,6 +1,9 @@
+import InputForm from "@/components/InputForm";
 import StatusBar from "@/components/StatusBar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
   return (
@@ -10,17 +13,7 @@ export default function Home() {
           Find Deleted Tweets
         </h1>
         <div className="my-4"></div>
-        <div className="w-full">
-          <Label htmlFor="handleInput" className="text-lg">
-            Enter a username
-          </Label>
-          <div className="mt-1"></div>
-          <Input
-            id="handleInput"
-            placeholder="elonmusk"
-            className="dark:border-slate-700 text-lg h-12"
-          />
-        </div>
+        <InputForm />
         <StatusBar />
       </div>
     </main>
