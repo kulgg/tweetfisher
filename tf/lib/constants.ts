@@ -7,5 +7,3 @@ export const proxySettings = {
     password: process.env.PROXY_PASSWORD!,
   },
 };
-
-console.log(proxySettings);
