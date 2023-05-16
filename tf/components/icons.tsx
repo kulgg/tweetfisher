@@ -25,6 +25,10 @@ import {
   User,
   X,
   type Icon as LucideIcon,
+  Archive,
+  Trash2,
+  MailX,
+  WifiOff,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -43,6 +47,10 @@ export const Icons = {
       <circle cx="12" cy="12" r="10"></circle>
     </svg>
   ),
+  wifiOff: WifiOff,
+  mailX: MailX,
+  trash2: Trash2,
+  archive: Archive,
   close: X,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
