@@ -1,4 +1,4 @@
-import { SettingsDialog } from "@/app/SettingsDialog";
+import { SettingsDialog } from "@/components/SettingsDialog";
 import React from "react";
 import { Icons } from "./icons";
 
