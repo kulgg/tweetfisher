@@ -14,7 +14,6 @@ export default function Home() {
         </h1>
         <div className="my-4"></div>
         <InputForm />
-        <StatusBar />
       </div>
     </main>
   );

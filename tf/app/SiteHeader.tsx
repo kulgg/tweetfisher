@@ -7,7 +7,7 @@ import React from "react";
 
 function SiteHeader() {
   return (
-    <header className="py-10 flex items-center justify-between">
+    <header className="py-10 flex items-center justify-between w-full">
       <Link href="/" className="flex items-center text-2xl">
         <Image
           src="/anon-modified.png"
