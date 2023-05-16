@@ -11,31 +11,33 @@ export async function GET(
   {
     params,
   }: {
-    params: { handle: string };
+    params: { url: string };
   }
 ) {
-  const handle = params.handle;
+  const url = params.url;
+
+  if (!url || Array.isArray(url)) {
+    return NextResponse.json("No URL", { status: 400 });
+  }
+
+  if (!url.startsWith("https://twitter.com/")) {
+    return NextResponse.json("Bad URL", { status: 404 });
+  }
 
   try {
-    const res = await axios.get(`https://twitter.com/${handle}`, {
+    const res = await axios.get(url, {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (compatible; DuckDuckBot-Https/1.1; https://duckduckgo.com/duckduckbot)",
       },
+      method: "head",
       // proxy: proxySettings,
     });
 
-    const html = res.data;
-
-    if (html.search(/Account suspended<\/span>/) !== -1) {
-      return NextResponse.json({ accountType: "suspended" });
-    }
-
-    return NextResponse.json({ accountType: "active" });
+    return NextResponse.json(res.statusText, { status: res.status });
   } catch (err: any) {
-    if (err.response.status === 404) {
-      return NextResponse.json({ accountType: "notfound" });
-    }
-    return NextResponse.json("Server Error", { status: 500 });
+    return NextResponse.json(err.response.statusText, {
+      status: err.response.status,
+    });
   }
 }
