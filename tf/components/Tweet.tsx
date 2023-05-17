@@ -16,6 +16,7 @@ export type TweetProps = {
 async function Tweet({ archive }: { archive: DeletedTweet }) {
   console.log(archive);
   console.log(
+    "url",
     `${process.env.NEXT_PUBLIC_SITE_URL}/api/archive/tweet/${
       archive.archiveDate
     }/${encodeURIComponent(archive.url)}`
@@ -57,7 +58,7 @@ async function Tweet({ archive }: { archive: DeletedTweet }) {
         <div className="">
           <a
             href={url}
-            className="border-1 select-none rounded-md bg-gray-700 px-2 py-1 text-xs text-gray-200 hover:underline"
+            className="border-1 select-none rounded-md bg-gray-200 dark:bg-gray-700 px-2 py-1 text-xs text-gray-800 dark:text-gray-200 hover:underline"
           >
             Archive
           </a>
@@ -95,7 +96,7 @@ async function Tweet({ archive }: { archive: DeletedTweet }) {
           />
         ))}
       </div>
-      <div className="text-[15px] text-neutral-500 dark:text-neutral-500 sm:text-lg">
+      <div className="text-[15px] text-neutral-500 dark:text-neutral-500 text-base">
         {date}
       </div>
       <div className="my-3 sm:my-6"></div>

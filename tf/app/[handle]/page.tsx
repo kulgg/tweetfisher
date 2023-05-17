@@ -1,7 +1,5 @@
-import Tweet from "@/components/tweet";
-import { Skeleton } from "@/components/ui/skeleton";
 import { groupByUrl, validUrlsFilter } from "@/lib/utils";
-import { Suspense } from "react";
+import Tweets from "./Tweets";
 
 async function getUnique(data: any) {
   return data.filter(validUrlsFilter).reduce(groupByUrl, {});
@@ -25,21 +23,10 @@ async function Page({ params }: { params: { handle: string } }) {
   const archivedTweets = await archivedTweetsResponse.json();
   const tweetToArchivesMap = await getUnique(archivedTweets);
 
-  console.log(tweetToArchivesMap[Object.keys(tweetToArchivesMap).at(0)!][0]);
-
   return (
     <div className="min-h-screen max-w-[670px] mx-auto mt-20">
-      <Suspense
-        fallback={
-          <Skeleton className="w-[670px] h-[300px] bg-slate-100 dark:bg-slate-800" />
-        }
-      >
-        <Tweet
-          archive={
-            tweetToArchivesMap[Object.keys(tweetToArchivesMap).at(0)!][0]
-          }
-        />
-      </Suspense>
+      {/* @ts-expect-error Server Component */}
+      <Tweets archiveMap={tweetToArchivesMap} />
       <div>{archivedTweets.length}</div>
       <div>{Object.keys(tweetToArchivesMap).length}</div>
       {JSON.stringify(accountStatus)}
