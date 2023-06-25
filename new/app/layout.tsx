@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import SiteHeader from "./SiteHeader";
 import { cn } from "@/lib/utils";
+import StatusBar from "@/components/StatusBar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
           <div className="container">
             <SiteHeader />
             {children}
+            <StatusBar />
           </div>
         </ThemeProvider>
       </body>
