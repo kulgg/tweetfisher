@@ -8,9 +8,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components//ui/tooltip";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { usePathname } from "next/navigation";
-import { accountStatusAtom } from "@/lib/atoms";
+import {
+  accountStatusAtom,
+  archivedTweetsAtom,
+  numUniqueArchivedTweetsAtom,
+  twitterStatusQueueAtom,
+} from "@/lib/atoms";
 
 interface FetchProcessData {
   accountType: string;
@@ -45,7 +50,9 @@ const getAccountTypeName = (accountType: string) => {
 function StatusBar() {
   const pathname = usePathname();
   const handle = pathname.slice(1);
-  const [accountStatus, _] = useAtom(accountStatusAtom);
+  const accountStatus = useAtomValue(accountStatusAtom);
+  const numUniqueArchivedTweets = useAtomValue(numUniqueArchivedTweetsAtom);
+  const twitterStatusQueue = useAtomValue(twitterStatusQueueAtom);
 
   return (
     <footer className="z-10 fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 bg-slate-100 dark:bg-gray-800 px-2 text-slate-800 dark:text-gray-100 lg:px-0">
@@ -74,7 +81,7 @@ function StatusBar() {
                     <Icons.archive className="h-5 w-5" />
                     <div>
                       <span className="font-semibold dark:text-gray-200 text-primary">
-                        {0}
+                        {numUniqueArchivedTweets}
                       </span>
                     </div>
                   </div>
@@ -140,7 +147,7 @@ function StatusBar() {
                       <div className="flex items-center gap-3">
                         <div>
                           <span className="text-gray-700 dark:text-gray-300">
-                            {0}
+                            {twitterStatusQueue.length}
                           </span>{" "}
                           <span className="text-xs">in queue</span>
                         </div>

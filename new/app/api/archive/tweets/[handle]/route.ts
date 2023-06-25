@@ -25,7 +25,6 @@ export async function GET(
         "User-Agent":
           "Mozilla/5.0 (compatible; DuckDuckBot-Https/1.1; https://duckduckgo.com/duckduckbot)",
       },
-      method: "head",
     });
 
     const text = await res.text();
