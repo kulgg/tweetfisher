@@ -9,8 +9,8 @@ import {
   TooltipTrigger,
 } from "@/components//ui/tooltip";
 import { useAtom } from "jotai";
-import { accountStatusAtom } from "@/lib/atoms";
 import { usePathname } from "next/navigation";
+import { accountStatusAtom } from "@/lib/atoms";
 
 interface FetchProcessData {
   accountType: string;
@@ -42,7 +42,7 @@ const getAccountTypeName = (accountType: string) => {
   }
 };
 
-async function StatusBar() {
+function StatusBar() {
   const pathname = usePathname();
   const handle = pathname.slice(1);
   const [accountStatus, _] = useAtom(accountStatusAtom);

@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import SiteHeader from "./SiteHeader";
 import { cn } from "@/lib/utils";
 import StatusBar from "@/components/StatusBar";
+import Providers from "./Providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -27,11 +28,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("font-sans", inter.variable, clash.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="container">
-            <SiteHeader />
-            {children}
-            <StatusBar />
-          </div>
+          <Providers>
+            <div className="container">
+              <SiteHeader />
+              {children}
+              <StatusBar />
+            </div>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>
