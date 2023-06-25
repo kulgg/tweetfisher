@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 function ProfilePicture({ pfp }: { pfp: string }) {
   const [pfpUrl, setPfpUrl] = useState(pfp);
-  const fallbackPfp = "/anon.png";
+  const fallbackPfp = "/tweetfisher.png";
 
   return (
     // eslint-disable-next-line @next/next/no-img-element

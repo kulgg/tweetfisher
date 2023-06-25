@@ -15,7 +15,7 @@ function Header() {
       <div className="mx-5 flex h-16 max-w-6xl items-center justify-between xl:mx-auto">
         <Link href="/" className="flex items-center font-display text-2xl">
           <Image
-            src="/anon-modified.png"
+            src="/tweetfisher.png"
             alt="Logo image of a stork"
             width="30"
             height="30"

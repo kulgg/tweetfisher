@@ -10,7 +10,7 @@ function SiteHeader() {
     <header className="py-10 flex items-center justify-between w-full">
       <Link href="/" className="flex items-center text-2xl">
         <Image
-          src="/anon-modified.png"
+          src="/tweetfisher.png"
           alt="Logo image of a stork"
           width="30"
           height="30"

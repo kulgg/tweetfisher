@@ -25,7 +25,7 @@ function ArchivedTweet({
 }: TweetProps) {
   const [pfpUrl, setPfpUrl] = useState(pfp);
 
-  const fallbackPfp = "/anon.png";
+  const fallbackPfp = "/tweetfisher.png";
 
   let replyToMessage = "";
   let replyToHandles: string[] = [];

@@ -1,3 +1,4 @@
+"use client";
 import { SettingsDialog } from "@/components/SettingsDialog";
 import React from "react";
 import { Icons } from "./icons";
@@ -7,6 +8,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { useAtom } from "jotai";
+import { accountStatusAtom } from "@/lib/atoms";
 
 interface FetchProcessData {
   accountType: string;
@@ -39,17 +42,17 @@ const getAccountTypeName = (accountType: string) => {
 };
 
 async function StatusBar({ handle }: StatusBarProps) {
-  const accountStatus = "suspended";
+  const [accountStatus, _] = useAtom(accountStatusAtom);
 
   return (
-    <footer className="fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 bg-slate-100 dark:bg-gray-800 px-2 text-slate-800 dark:text-gray-100 lg:px-0">
+    <footer className="z-10 fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 bg-slate-100 dark:bg-gray-800 px-2 text-slate-800 dark:text-gray-100 lg:px-0">
       <div className="flex w-full h-12 items-center justify-between container">
         {handle ? (
           <div className="flex items-center gap-3">
             <TooltipProvider>
               <Tooltip delayDuration={50}>
                 <TooltipTrigger className="cursor-default">
-                  <div className="whitespace-nowrap bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-200 bg-clip-text text-lg font-bold text-transparent">
+                  <div className="whitespace-nowrap bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-200 bg-clip-text text-lg font-bold text-transparent w-full">
                     @{handle}
                   </div>
                 </TooltipTrigger>

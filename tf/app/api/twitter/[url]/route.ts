@@ -23,21 +23,19 @@ export async function GET(
   if (!url.startsWith("https://twitter.com/")) {
     return NextResponse.json("Bad URL", { status: 404 });
   }
+  console.log(url);
 
-  try {
-    const res = await axios.get(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; DuckDuckBot-Https/1.1; https://duckduckgo.com/duckduckbot)",
-      },
-      method: "head",
-      // proxy: proxySettings,
-    });
+  const result = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (compatible; DuckDuckBot-Https/1.1; https://duckduckgo.com/duckduckbot)",
+    },
+    method: "HEAD",
+  });
 
-    return NextResponse.json(res.statusText, { status: res.status });
-  } catch (err: any) {
-    return NextResponse.json(err.response.statusText, {
-      status: err.response.status,
-    });
+  if (!result) {
+    return NextResponse.json("Server error", { status: 500 });
   }
+
+  return NextResponse.json(result.statusText, { status: result.status });
 }

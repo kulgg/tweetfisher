@@ -5,6 +5,7 @@ import { StyleSwitcher } from "@/components/style-switcher";
 import { ThemeProvider } from "@/components/theme-provider";
 import SiteHeader from "./SiteHeader";
 import { cn } from "@/lib/utils";
+import StatusBar from "@/components/StatusBar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
