@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 function SiteHeader() {
   return (
-    <header className="relative py-10 flex items-center justify-between w-full">
+    <header className="relative py-8 flex items-center justify-between w-full">
       <Link href="/" className="flex items-center text-2xl">
         <Image
           src="/tweetfisher.png"

@@ -1,5 +1,5 @@
 "use client";
-// import { SettingsDialog } from "@/components/SettingsDialog";
+import { SettingsDialog } from "@/components/SettingsDialog";
 import React from "react";
 import { Icons } from "@/components/ui/icons";
 import {
@@ -196,7 +196,7 @@ async function StatusBar() {
         ) : (
           <div></div>
         )}
-        {/* <SettingsDialog /> */}
+        <SettingsDialog />
       </div>
     </footer>
   );
