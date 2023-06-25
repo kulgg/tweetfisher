@@ -1,3 +1,4 @@
+"use client";
 import { Icons } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,9 +19,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { DialogOverlay } from "@radix-ui/react-dialog";
+import { archiveTpsAtom, twitterTpsAtom } from "@/lib/atoms";
+import { DialogClose, DialogOverlay } from "@radix-ui/react-dialog";
+import { useAtom } from "jotai";
+import { useState } from "react";
 
 export function SettingsDialog() {
+  const [twitterTps, setTwitterTps] = useAtom(twitterTpsAtom);
+  const [archiveTps, setArchiveTps] = useAtom(archiveTpsAtom);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -48,18 +55,27 @@ export function SettingsDialog() {
             <Label htmlFor="twitterTps" className="text-right">
               Twitter.com
             </Label>
-            <Input id="twitterTps" value="1.2" className="col-span-3" />
+            <Input
+              id="twitterTps"
+              value={twitterTps}
+              type="number"
+              className="col-span-3"
+              onChange={(e) => setTwitterTps(parseFloat(e.target.value))}
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="archiveTps" className="text-right">
               Archive.org
             </Label>
-            <Input id="archiveTps" value="3" className="col-span-3" />
+            <Input
+              id="archiveTps"
+              value={archiveTps}
+              type="number"
+              className="col-span-3"
+              onChange={(e) => setArchiveTps(parseFloat(e.target.value))}
+            />
           </div>
         </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
