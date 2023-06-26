@@ -18,7 +18,7 @@ function AccountStatus({ handle }: { handle: string }) {
       });
   }, []);
 
-  return <div>{accountStatus}</div>;
+  return <div></div>;
 }
 
 export default AccountStatus;

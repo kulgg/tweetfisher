@@ -53,15 +53,20 @@ function Tweets({ handle }: { handle: string }) {
     setQueue: setArchiveQueue,
     requestsPerSecond: archiveTps,
     setRequestsPerSecond: setArchiveTps,
+    priorAction: (curr) =>
+      setResults((x) => [...x, { type: "loading", statusId: curr.statusId }]),
     action: (response, invalidated, curr) => {
-      response
-        .json()
-        .then((x) =>
-          setResults((prev) => [
-            ...prev,
-            { ...x, type: "result", handle: handle, url: curr.url },
-          ])
-        );
+      response.json().then((x) =>
+        setResults((prev) =>
+          prev.map((y) => {
+            if (y.type === "loading" && y.statusId === curr.statusId) {
+              return { ...x, type: "result", handle: handle, url: curr.url };
+            }
+
+            return y;
+          })
+        )
+      );
     },
     invalidateCanary: "",
     urlAccessor: (s) =>

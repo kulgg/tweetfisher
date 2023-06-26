@@ -33,11 +33,7 @@ function FetchTweets({ handle }: { handle: string }) {
       });
   }, []);
 
-  return (
-    <div>
-      <Tweets handle={handle} />
-    </div>
-  );
+  return <div></div>;
 }
 
 export default FetchTweets;

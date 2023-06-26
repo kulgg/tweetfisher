@@ -17,4 +17,4 @@ export type FullDeletedTweet = {
 
 export type TweetResult =
   | ({ type: "result" } & FullDeletedTweet)
-  | { type: "loading" };
+  | { type: "loading"; statusId: string };

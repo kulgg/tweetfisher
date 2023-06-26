@@ -15,8 +15,7 @@ export type TweetProps = {
 };
 
 function Tweet({ t }: { t: TweetResult }) {
-  if (t.type === "loading") return;
-  <Skeleton className="w-[670px] h-[300px] bg-slate-100 dark:bg-slate-800" />;
+  if (t.type === "loading") return <Skeleton className="w-[670px] h-[250px]" />;
 
   const { tweet, username, date, avatarUrl, replyTo, imageUrls, url, handle } =
     t;

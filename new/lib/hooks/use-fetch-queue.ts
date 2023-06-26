@@ -8,6 +8,7 @@ export type UseFetchQueueProps<T> = {
   invalidateCanary: string;
   urlAccessor: (t: T) => string;
   action: (response: Response, invalidates: boolean, current: T) => void;
+  priorAction?: (curr: T) => void;
 };
 
 const useFetchQueue = <T>({
@@ -17,6 +18,7 @@ const useFetchQueue = <T>({
   setRequestsPerSecond,
   invalidateCanary,
   urlAccessor,
+  priorAction,
   action,
 }: UseFetchQueueProps<T>) => {
   const intervalId = useRef<string | NodeJS.Timer | number | null>(null);
@@ -55,6 +57,9 @@ const useFetchQueue = <T>({
 
       const url = urlAccessor(curr);
       if (url) {
+        if (priorAction) {
+          priorAction(curr);
+        }
         fetch(url)
           .then((response) => action(response, canaryRef.current !== tmp, curr))
           .catch((error) => {
