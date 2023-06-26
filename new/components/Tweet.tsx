@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import { DeletedTweet } from "@/lib/types";
+import { DeletedTweet, TweetResult } from "@/lib/types";
 import ProfilePicture from "./ProfilePicture";
+import { Skeleton } from "./ui/skeleton";
 
 export type TweetProps = {
   pfp: string;
@@ -13,26 +14,12 @@ export type TweetProps = {
   replyTo: string | null;
 };
 
-async function Tweet({ archive }: { archive: DeletedTweet }) {
-  console.log(archive);
-  console.log(
-    "url",
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/archive/tweet/${
-      archive.archiveDate
-    }/${encodeURIComponent(archive.url)}`
-  );
+function Tweet({ t }: { t: TweetResult }) {
+  if (t.type === "loading") return;
+  <Skeleton className="w-[670px] h-[300px] bg-slate-100 dark:bg-slate-800" />;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/archive/tweet/${
-      archive.archiveDate
-    }/${encodeURIComponent(archive.url)}`
-  );
-
-  const { tweet, username, date, avatarUrl, replyTo, imageUrls } =
-    await res.json();
-
-  const url = "https://google.com";
-  const handle = "yoyoy";
+  const { tweet, username, date, avatarUrl, replyTo, imageUrls, url, handle } =
+    t;
 
   let replyToMessage = "";
   let replyToHandles: string[] = [];
@@ -84,10 +71,10 @@ async function Tweet({ archive }: { archive: DeletedTweet }) {
       </div>
       <div
         className={`grid ${
-          imageUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"
+          imageUrls?.length === 1 ? "grid-cols-1" : "grid-cols-2"
         }`}
       >
-        {imageUrls.map((url: string) => (
+        {imageUrls?.map((url: string) => (
           <img
             key={url}
             src={url}

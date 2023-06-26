@@ -1,6 +1,7 @@
 export type DeletedTweet = {
   archiveDate: string;
   url: string;
+  statusId: string;
 };
 
 export type FullDeletedTweet = {
@@ -13,3 +14,7 @@ export type FullDeletedTweet = {
   replyTo: string | null;
   imageUrls: string[];
 };
+
+export type TweetResult =
+  | ({ type: "result" } & FullDeletedTweet)
+  | { type: "loading" };

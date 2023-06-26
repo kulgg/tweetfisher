@@ -12,6 +12,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { usePathname } from "next/navigation";
 import {
   accountStatusAtom,
+  archiveQueueAtom,
   archivedTweetsAtom,
   numUniqueArchivedTweetsAtom,
   twitterStatusQueueAtom,
@@ -53,6 +54,7 @@ function StatusBar() {
   const accountStatus = useAtomValue(accountStatusAtom);
   const numUniqueArchivedTweets = useAtomValue(numUniqueArchivedTweetsAtom);
   const twitterStatusQueue = useAtomValue(twitterStatusQueueAtom);
+  const archiveQueue = useAtomValue(archiveQueueAtom);
 
   return (
     <footer className="z-10 fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 bg-slate-100 dark:bg-gray-800 px-2 text-slate-800 dark:text-gray-100 lg:px-0">
@@ -178,7 +180,7 @@ function StatusBar() {
                       <div className="flex items-center gap-3">
                         <div>
                           <span className="text-gray-700 dark:text-gray-300">
-                            {0}
+                            {archiveQueue.length}
                           </span>{" "}
                           <span className="text-xs">in queue</span>
                         </div>
@@ -194,7 +196,7 @@ function StatusBar() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-base dark:text-slate-200 text-slate-800">
-                    Archive Status Queue
+                    Archive Queue
                   </p>
                 </TooltipContent>
               </Tooltip>

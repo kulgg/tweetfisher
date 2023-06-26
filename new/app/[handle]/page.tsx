@@ -2,6 +2,7 @@
 // import Tweets from "./Tweets";
 // import { DeletedTweet } from "@/lib/types";
 
+import Tweet from "@/components/Tweet";
 import AccountStatus from "./AccountStatus";
 import FetchTweets from "./FetchTweets";
 

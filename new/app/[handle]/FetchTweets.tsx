@@ -26,7 +26,7 @@ function FetchTweets({ handle }: { handle: string }) {
 
         const tmp: DeletedTweet[][] = [];
         for (const k of Object.keys(tweetToArchivesMap)) {
-          tmp.push(tweetToArchivesMap[k]);
+          tmp.push(tweetToArchivesMap[k].map((x) => ({ ...x, statusId: k })));
         }
 
         setTwitterStatusQueue(tmp);
@@ -35,7 +35,7 @@ function FetchTweets({ handle }: { handle: string }) {
 
   return (
     <div>
-      <Tweets />
+      <Tweets handle={handle} />
     </div>
   );
 }

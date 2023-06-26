@@ -1,6 +1,12 @@
+import Tweet from "@/components/Tweet";
 import InputForm from "./InputForm";
 
 export default function Home() {
+  const a = {
+    archiveDate: "20220219175519",
+    url: "https://twitter.com/EmmanuelMacron/status/1669706710489899009",
+  };
+
   return (
     <main className="mt-5 p-10 min-h-screen">
       <div className="max-w-[670px] mx-auto">
