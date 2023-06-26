@@ -8,7 +8,7 @@ export default function Home() {
   };
 
   return (
-    <main className="mt-5 p-10 min-h-screen">
+    <main className="mt-5 pt-32 p-10 min-h-screen">
       <div className="max-w-[670px] mx-auto">
         <h1 className="my-4 bg-gradient-to-br from-slate-900 to-stone-500 dark:from-white dark:to-stone-300 bg-clip-text text-[39px] font-bold text-transparent sm:my-10 sm:text-5xl">
           Find Deleted Tweets
