@@ -41,7 +41,7 @@ export interface StatusBarProps {
   handle: string;
 }
 
-const getAccountTypeName = (accountType: string) => {
+export const getAccountTypeName = (accountType: string) => {
   switch (accountType) {
     case "active":
       return "Active";

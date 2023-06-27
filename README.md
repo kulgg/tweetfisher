@@ -53,10 +53,10 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 
 ### Backlog
 
-- [ ] Show some more loading status at beginning with toasts
 - [ ] Add export functionality
 - [ ] Autoscroll option
 - [ ] Settings save button
+- [x] Show some more loading status at beginning with toasts
 - [x] Add missed tweets refetch button
 - [x] Handle back / forward routing resets of atoms
 - [x] Backend should request multiple times incase of failure

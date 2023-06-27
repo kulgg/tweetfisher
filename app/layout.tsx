@@ -6,6 +6,7 @@ import SiteHeader from "./SiteHeader";
 import { cn } from "@/lib/utils";
 import StatusBar from "@/components/StatusBar";
 import Providers from "./Providers";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -34,6 +35,7 @@ export default function RootLayout({
               {children}
               <StatusBar />
             </div>
+            <Toaster />
           </Providers>
         </ThemeProvider>
       </body>
