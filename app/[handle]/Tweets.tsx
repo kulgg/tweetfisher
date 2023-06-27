@@ -2,13 +2,12 @@
 import Tweet from "@/components/Tweet";
 import {
   archiveQueueAtom,
-  archiveTpsAtom,
   archivedTweetsAtom,
   deletedTweetsAtom,
   missedTweetsAtom,
   numStatusResponsesAtom,
   twitterStatusQueueAtom,
-  twitterTpsAtom,
+  settingsAtom,
 } from "@/lib/atoms";
 import { ITweetMap } from "@/lib/filter";
 import useFetchQueue from "@/lib/hooks/use-fetch-queue";
@@ -27,8 +26,7 @@ function Tweets({ handle }: { handle: string }) {
   const [twitterStatusQueue, setTwitterStatusQueue] = useAtom(
     twitterStatusQueueAtom
   );
-  const [twitterTps, setTwitterTps] = useAtom(twitterTpsAtom);
-  const [archiveTps, setArchiveTps] = useAtom(archiveTpsAtom);
+  const [settings, setSettings] = useAtom(settingsAtom);
   const [archiveQueue, setArchiveQueue] = useAtom(archiveQueueAtom);
   const [missedTweets, setMissedTweets] = useAtom(missedTweetsAtom);
   const [numStatusResponses, setNumStatusResponses] = useAtom(
@@ -39,8 +37,7 @@ function Tweets({ handle }: { handle: string }) {
   useFetchQueue({
     queue: twitterStatusQueue,
     setQueue: setTwitterStatusQueue,
-    requestsPerSecond: twitterTps,
-    setRequestsPerSecond: setTwitterTps,
+    requestsPerSecond: settings.tps_settings.twitter,
     action: (response, invalidated, curr) => {
       if (invalidated) {
         console.log("Invalidated status response");
@@ -67,8 +64,7 @@ function Tweets({ handle }: { handle: string }) {
   useFetchQueue({
     queue: archiveQueue,
     setQueue: setArchiveQueue,
-    requestsPerSecond: archiveTps,
-    setRequestsPerSecond: setArchiveTps,
+    requestsPerSecond: settings.tps_settings.archive,
     priorAction: (curr) =>
       setResults((x) => [...x, { type: "loading", statusId: curr.statusId }]),
     action: (response, invalidated, curr) => {

@@ -4,7 +4,6 @@ export type UseFetchQueueProps<T> = {
   queue: T[];
   setQueue: React.Dispatch<React.SetStateAction<T[]>>;
   requestsPerSecond: number;
-  setRequestsPerSecond: React.Dispatch<React.SetStateAction<number>>;
   invalidateCanary: string;
   urlAccessor: (t: T) => string;
   action: (response: Response, invalidates: boolean, current: T) => void;
@@ -15,7 +14,6 @@ const useFetchQueue = <T>({
   queue,
   setQueue,
   requestsPerSecond,
-  setRequestsPerSecond,
   invalidateCanary,
   urlAccessor,
   priorAction,

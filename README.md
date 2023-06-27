@@ -50,12 +50,12 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 - [x] Include all possible archived tweets
 - [ ] Parse quote tweets
 - [ ] Adaptive throttling
+- [ ] Add export functionality
+- [ ] Autoscroll option
 
 ### Backlog
 
-- [ ] Add export functionality
-- [ ] Autoscroll option
-- [ ] Settings save button
+- [x] Add Settings Form With Validation
 - [x] Show some more loading status at beginning with toasts
 - [x] Add missed tweets refetch button
 - [x] Handle back / forward routing resets of atoms

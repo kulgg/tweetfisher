@@ -1,6 +1,6 @@
 "use client";
 import { SettingsDialog } from "@/components/SettingsDialog";
-import React from "react";
+import React, { useState } from "react";
 import { Icons } from "@/components/ui/icons";
 import {
   Tooltip,
@@ -66,6 +66,8 @@ function StatusBar() {
   const [missedTweets, setMissedTweets] = useAtom(missedTweetsAtom);
   const setTwitterStatusQueue = useSetAtom(twitterStatusQueueAtom);
   const deletedTweets = useAtomValue(deletedTweetsAtom);
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <footer className="z-10 fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 bg-slate-100 dark:bg-gray-800 px-2 text-slate-800 dark:text-gray-100 lg:px-0">
@@ -225,7 +227,15 @@ function StatusBar() {
         ) : (
           <div></div>
         )}
-        <SettingsDialog />
+        <Button
+          variant={"default"}
+          size="sm"
+          className="gap-1 flex items-center"
+          onClick={() => setIsSettingsOpen(true)}
+        >
+          <Icons.settings className="w-4 h-4" /> Settings
+        </Button>
+        <SettingsDialog isOpen={isSettingsOpen} setIsOpen={setIsSettingsOpen} />
       </div>
     </footer>
   );

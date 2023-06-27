@@ -19,17 +19,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { archiveTpsAtom, twitterTpsAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import { useState } from "react";
+import SettingsForm from "./SettingsForm";
+import { DialogClose } from "@radix-ui/react-dialog";
 
-export function SettingsDialog() {
-  const [twitterTps, setTwitterTps] = useAtom(twitterTpsAtom);
-  const [archiveTps, setArchiveTps] = useAtom(archiveTpsAtom);
-
+export function SettingsDialog({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={isOpen} onOpenChange={(x) => setIsOpen(x)}>
+      {/* <DialogTrigger asChild>
         <Button
           variant={"default"}
           size="sm"
@@ -37,44 +41,13 @@ export function SettingsDialog() {
         >
           <Icons.settings className="w-4 h-4" /> Settings
         </Button>
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>Adjust the throttling as needed</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Badge
-            variant={"default"}
-            className="w-40 flex items-center justify-center"
-          >
-            Requests per second
-          </Badge>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="twitterTps" className="text-right">
-              Twitter.com
-            </Label>
-            <Input
-              id="twitterTps"
-              value={twitterTps}
-              type="number"
-              className="col-span-3"
-              onChange={(e) => setTwitterTps(parseFloat(e.target.value))}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="archiveTps" className="text-right">
-              Archive.org
-            </Label>
-            <Input
-              id="archiveTps"
-              value={archiveTps}
-              type="number"
-              className="col-span-3"
-              onChange={(e) => setArchiveTps(parseFloat(e.target.value))}
-            />
-          </div>
-        </div>
+        <SettingsForm setIsOpen={setIsOpen} />
       </DialogContent>
     </Dialog>
   );

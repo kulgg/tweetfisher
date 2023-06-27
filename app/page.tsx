@@ -1,4 +1,3 @@
-import Tweet from "@/components/Tweet";
 import InputForm from "./InputForm";
 
 export default function Home() {

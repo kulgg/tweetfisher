@@ -1,10 +1,11 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { ITweetMap } from "./filter";
-import { DeletedTweet, FullDeletedTweet, TweetResult } from "./types";
+import { DeletedTweet, FullDeletedTweet, Settings, TweetResult } from "./types";
 
-const twitterTpsAtom = atomWithStorage("tweetfisher.twitterTps", 1.2);
-const archiveTpsAtom = atomWithStorage("tweetfisher.archiveTps", 3.0);
+const settingsAtom = atomWithStorage<Settings>("tweetfisher.settings", {
+  tps_settings: { twitter: 1.2, archive: 3.0 },
+});
 
 const accountNameAtom = atom("");
 const accountStatusAtom = atom("");
@@ -23,8 +24,7 @@ const numArchiveResponsesAtom = atom((get) => {
 });
 
 export {
-  twitterTpsAtom,
-  archiveTpsAtom,
+  settingsAtom,
   accountStatusAtom,
   archivedTweetsAtom,
   numUniqueArchivedTweetsAtom,

@@ -18,3 +18,12 @@ export type FullDeletedTweet = {
 export type TweetResult =
   | ({ type: "result" } & FullDeletedTweet)
   | { type: "loading"; statusId: string };
+
+interface TpsSettings {
+  twitter: number;
+  archive: number;
+}
+
+export interface Settings {
+  tps_settings: TpsSettings;
+}
