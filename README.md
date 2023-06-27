@@ -32,9 +32,18 @@ cd tweetfisher
 npm install
 ```
 
+`Before running`: Copy _.env.example_ to _.env.local_
+
 ```
 npm run dev
 ```
+
+## Stack
+
+- **Framework**: <a href="https://nextjs.org">Next.js</a>
+- **Styling**: <a href="https://tailwindcss.com/">Tailwind CSS</a>
+- **State management**: <a href="https://jotai.org/">jotai</a>
+- **UI Components:**: <a href="https://ui.shadcn.com">shadcn</a>
 
 ## FAQ
 
@@ -44,36 +53,9 @@ Initially, I wanted to perform all requests on the client-side to avoid throttli
 
 As a solution, all requests have been wrapped by Next.js API routes. Unfortunately, this makes it difficult to host this app for widespread use due to throttling constraints.
 
-## Additional Features
+## ToDo
 
-- [x] Consider account state (Active, Inactive, Suspended)
-- [x] Include all possible archived tweets
-- [ ] Parse quote tweets
-- [ ] Adaptive throttling
-- [ ] Add export functionality
-- [ ] Autoscroll option
-
-### Backlog
-
-- [x] Add Settings Form With Validation
-- [x] Show some more loading status at beginning with toasts
-- [x] Add missed tweets refetch button
-- [x] Handle back / forward routing resets of atoms
-- [x] Backend should request multiple times incase of failure
-- [x] Do requests concurrently with ability to set max TPS
-- [x] Fetch deleted tweets parallel to status checking process
-- [x] Show deleted tweets fetching process
-- [x] Support parsing of Jul 2022 and later version
-- [x] Use throttled queue instead
-- [x] Fix emojs in tweets
-- [x] Support image parsing
-- [x] Support "replies to"
-- [x] Fix parsing bugs
-- [x] Add scrollup button
-- [x] Add popon header
-- [x] Add throttle settings PopUp UI
-- [x] Finish sticky header
-- [x] Validate that urls are of an actual status
-- [x] Queues should instantly use updated TPS values
-- [x] Fix Index state mess
-- [x] Fix timeout useEffect queue (ongoing fetches are not invalidates when a new username is entered)
+- Add export functionality
+- Autoscroll option
+- Parse quote tweets
+- Adaptive throttling
