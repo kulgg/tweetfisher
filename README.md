@@ -55,10 +55,10 @@ As a solution, all requests have been wrapped by Next.js API routes. Unfortunate
 
 - [ ] Add missed tweets refetch button
 - [ ] Show some more loading status at beginning with toasts
-- [ ] Handle back / forward routing resets of atoms
 - [ ] Add export functionality
 - [ ] Autoscroll option
 - [ ] Settings save button
+- [x] Handle back / forward routing resets of atoms
 - [x] Backend should request multiple times incase of failure
 - [x] Do requests concurrently with ability to set max TPS
 - [x] Fetch deleted tweets parallel to status checking process

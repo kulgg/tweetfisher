@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 function SiteHeader() {
   return (
-    <header className="fixed top-0 left-0 w-full bg-white dark:bg-slate-900 border-b dark:border-b-slate-700">
+    <header className="z-50 fixed top-0 left-0 w-full bg-white dark:bg-slate-900 border-b border-b-slate-200/60 dark:border-b-slate-700/60">
       <div className="mx-auto max-w-7xl px-10 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center text-2xl">
           <Image

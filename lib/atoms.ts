@@ -6,6 +6,7 @@ import { DeletedTweet, FullDeletedTweet, TweetResult } from "./types";
 const twitterTpsAtom = atomWithStorage("tweetfisher.twitterTps", 1.2);
 const archiveTpsAtom = atomWithStorage("tweetfisher.archiveTps", 3.0);
 
+const accountNameAtom = atom("");
 const accountStatusAtom = atom("");
 const archivedTweetsAtom = atom<ITweetMap>({});
 const numUniqueArchivedTweetsAtom = atom((get) => {
@@ -24,4 +25,5 @@ export {
   twitterStatusQueueAtom,
   archiveQueueAtom,
   deletedTweetsAtom,
+  accountNameAtom,
 };

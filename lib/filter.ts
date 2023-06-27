@@ -33,4 +33,8 @@ function isValidTweetStatusUrl(url: string): boolean {
   return url.match(TWEET_URL_REGEX) !== null;
 }
 
-export { validUrlsFilter, duplicateUrlsFilter, groupByUrl };
+function getUnique(data: any) {
+  return data.filter(validUrlsFilter).reduce(groupByUrl, {});
+}
+
+export { validUrlsFilter, duplicateUrlsFilter, groupByUrl, getUnique };
