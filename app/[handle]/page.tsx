@@ -8,8 +8,8 @@ import Tweets from "./Tweets";
 async function Page({ params: { handle } }: { params: { handle: string } }) {
   return (
     <div className="min-h-screen max-w-[670px] mx-auto my-24">
-      <FetchData handle={handle} />
       <Tweets handle={handle} />
+      <FetchData handle={handle} />
     </div>
   );
 }

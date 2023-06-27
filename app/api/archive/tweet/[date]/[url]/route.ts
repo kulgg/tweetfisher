@@ -48,56 +48,49 @@ export async function GET(
 
   const webArchiveUrl = `https://web.archive.org/web/${date}/${url}`;
 
-  try {
-    const res = await fetch(webArchiveUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; DuckDuckBot-Https/1.1; https://duckduckgo.com/duckduckbot)",
-      },
-    });
+  const res = await fetch(webArchiveUrl, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (compatible; DuckDuckBot-Https/1.1; https://duckduckgo.com/duckduckbot)",
+    },
+  });
 
-    const contentType = res.headers.get("Content-Type");
+  const contentType = res.headers.get("Content-Type");
 
-    if (
-      contentType &&
-      (contentType as string).indexOf("application/json") !== -1
-    ) {
-      const json = await res.json();
+  if (
+    contentType &&
+    (contentType as string).indexOf("application/json") !== -1
+  ) {
+    const json = await res.json();
 
-      const tweetObj = {
-        tweet: json.extended_tweet?.full_text ?? json.text,
-        username: json.user.name,
-        date: json.created_at,
-        avatarUrl: json.user.profile_image_url_https,
-        replyTo: `replying to @${json.in_reply_to_screen_name}`,
-        imageUrls:
-          json.entities?.media?.map((x: any) => x.media_url_https) ?? [],
-      };
+    const tweetObj = {
+      tweet: json.extended_tweet?.full_text ?? json.text,
+      username: json.user.name,
+      date: json.created_at,
+      avatarUrl: json.user.profile_image_url_https,
+      replyTo: `replying to @${json.in_reply_to_screen_name}`,
+      imageUrls: json.entities?.media?.map((x: any) => x.media_url_https) ?? [],
+    };
+    return handleResponse(tweetObj, webArchiveUrl);
+  } else {
+    let text = await res.text();
+
+    let containerHtml = firstParser.getContainerHtml(text);
+    if (containerHtml !== "") {
+      const tweetObj = firstParser.getTweetObj(containerHtml);
       return handleResponse(tweetObj, webArchiveUrl);
-    } else {
-      let text = await res.text();
+    }
+    console.log("First Parser failed");
 
-      let containerHtml = firstParser.getContainerHtml(text);
-      if (containerHtml !== "") {
-        const tweetObj = firstParser.getTweetObj(containerHtml);
-        return handleResponse(tweetObj, webArchiveUrl);
-      }
-      console.log("First Parser failed");
-
-      containerHtml = secondParser.getContainerHtml(text);
-      if (containerHtml !== "") {
-        const tweetObj = secondParser.getTweetObj(containerHtml);
-        return handleResponse(tweetObj, webArchiveUrl);
-      }
-
-      const msg = `[${webArchiveUrl}]\nAll parsers failed\n\n`;
-      fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
+    containerHtml = secondParser.getContainerHtml(text);
+    if (containerHtml !== "") {
+      const tweetObj = secondParser.getTweetObj(containerHtml);
+      return handleResponse(tweetObj, webArchiveUrl);
     }
 
-    return NextResponse.json("yoyo", { status: 200 });
-  } catch (err: any) {
-    return NextResponse.json(err.response.statusText, {
-      status: err.response.status,
-    });
+    const msg = `[${webArchiveUrl}]\nAll parsers failed\n\n`;
+    fs.writeFile("parsing_fails.txt", msg, { flag: "a+" }, (err) => {});
   }
+
+  return NextResponse.json("yoyo", { status: 200 });
 }

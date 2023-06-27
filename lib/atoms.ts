@@ -13,8 +13,14 @@ const numUniqueArchivedTweetsAtom = atom((get) => {
   return Object.keys(get(archivedTweetsAtom)).length;
 });
 const twitterStatusQueueAtom = atom<DeletedTweet[][]>([]);
+const missedTweetsAtom = atom<DeletedTweet[]>([]);
 const archiveQueueAtom = atom<DeletedTweet[]>([]);
 const deletedTweetsAtom = atom<TweetResult[]>([]);
+
+const numStatusResponsesAtom = atom(0);
+const numArchiveResponsesAtom = atom((get) => {
+  return get(deletedTweetsAtom).filter((x) => x.type === "result").length;
+});
 
 export {
   twitterTpsAtom,
@@ -26,4 +32,7 @@ export {
   archiveQueueAtom,
   deletedTweetsAtom,
   accountNameAtom,
+  missedTweetsAtom,
+  numStatusResponsesAtom,
+  numArchiveResponsesAtom,
 };

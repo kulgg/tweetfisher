@@ -8,15 +8,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components//ui/tooltip";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { usePathname } from "next/navigation";
 import {
   accountStatusAtom,
   archiveQueueAtom,
   archivedTweetsAtom,
+  deletedTweetsAtom,
+  missedTweetsAtom,
+  numArchiveResponsesAtom,
+  numStatusResponsesAtom,
   numUniqueArchivedTweetsAtom,
   twitterStatusQueueAtom,
 } from "@/lib/atoms";
+import { Button } from "./ui/button";
+import { RotateCcwIcon } from "lucide-react";
 
 interface FetchProcessData {
   accountType: string;
@@ -55,6 +61,11 @@ function StatusBar() {
   const numUniqueArchivedTweets = useAtomValue(numUniqueArchivedTweetsAtom);
   const twitterStatusQueue = useAtomValue(twitterStatusQueueAtom);
   const archiveQueue = useAtomValue(archiveQueueAtom);
+  const numStatusResponses = useAtomValue(numStatusResponsesAtom);
+  const numArchiveResponses = useAtomValue(numArchiveResponsesAtom);
+  const [missedTweets, setMissedTweets] = useAtom(missedTweetsAtom);
+  const setTwitterStatusQueue = useSetAtom(twitterStatusQueueAtom);
+  const deletedTweets = useAtomValue(deletedTweetsAtom);
 
   return (
     <footer className="z-10 fixed bottom-0 left-1/2 h-12 w-full -translate-x-1/2 bg-slate-100 dark:bg-gray-800 px-2 text-slate-800 dark:text-gray-100 lg:px-0">
@@ -103,7 +114,7 @@ function StatusBar() {
                     <div className="flex items-center gap-2">
                       <Icons.trash className="h-5 w-5" />
                       <span className="font-semibold dark:text-gray-200 text-primary">
-                        {0}
+                        {deletedTweets.length}
                       </span>
                     </div>
                   </div>
@@ -122,14 +133,23 @@ function StatusBar() {
                   <div className="flex items-center gap-2">
                     <Icons.wifiOff className="h-5 w-5" />
                     <span className="font-semibold dark:text-gray-200 text-primary">
-                      {0}
+                      {missedTweets.length}
                     </span>
-                    {
-                      0 > 0 && null
-                      // <GrayButton handleClick={handleRefetchClick}>
-                      //   <ArrowPathIcon className="h-4 w-4" />
-                      // </GrayButton>
-                    }
+                    {missedTweets.length > 0 ? (
+                      <Button
+                        size={"icon"}
+                        className="rounded-full w-7 h-7 ml-1"
+                        onClick={() => {
+                          setTwitterStatusQueue((prev) => [
+                            ...prev,
+                            ...missedTweets.map((x) => [x]),
+                          ]);
+                          setMissedTweets([]);
+                        }}
+                      >
+                        <RotateCcwIcon className="w-4 h-4" />
+                      </Button>
+                    ) : null}
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -156,7 +176,7 @@ function StatusBar() {
                       </div>
                       <div>
                         <span className="text-gray-700 dark:text-gray-300">
-                          {0}
+                          {numStatusResponses}
                         </span>{" "}
                         <span className="text-xs">responses</span>
                       </div>
@@ -187,7 +207,7 @@ function StatusBar() {
                       </div>
                       <div>
                         <span className="text-gray-700 dark:text-gray-300">
-                          {0}
+                          {numArchiveResponses}
                         </span>{" "}
                         <span className="text-xs">responses</span>
                       </div>

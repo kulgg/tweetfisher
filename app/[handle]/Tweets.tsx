@@ -5,6 +5,8 @@ import {
   archiveTpsAtom,
   archivedTweetsAtom,
   deletedTweetsAtom,
+  missedTweetsAtom,
+  numStatusResponsesAtom,
   twitterStatusQueueAtom,
   twitterTpsAtom,
 } from "@/lib/atoms";
@@ -28,6 +30,10 @@ function Tweets({ handle }: { handle: string }) {
   const [twitterTps, setTwitterTps] = useAtom(twitterTpsAtom);
   const [archiveTps, setArchiveTps] = useAtom(archiveTpsAtom);
   const [archiveQueue, setArchiveQueue] = useAtom(archiveQueueAtom);
+  const [missedTweets, setMissedTweets] = useAtom(missedTweetsAtom);
+  const [numStatusResponses, setNumStatusResponses] = useAtom(
+    numStatusResponsesAtom
+  );
   const [results, setResults] = useAtom(deletedTweetsAtom);
 
   useFetchQueue({
@@ -36,12 +42,22 @@ function Tweets({ handle }: { handle: string }) {
     requestsPerSecond: twitterTps,
     setRequestsPerSecond: setTwitterTps,
     action: (response, invalidated, curr) => {
-      console.log(response.status);
+      if (invalidated) {
+        console.log("Invalidated status response");
+        return;
+      }
+
+      if (response.status === 429 || response.status >= 500) {
+        setMissedTweets((prev) => [...prev, curr[0]]);
+      }
+
+      setNumStatusResponses((prev) => prev + 1);
+
       if (response.status === 404) {
         setArchiveQueue((prev) => [...prev, curr[0]]);
       }
     },
-    invalidateCanary: "",
+    invalidateCanary: handle,
     urlAccessor: (s) =>
       `${process.env.NEXT_PUBLIC_SITE_URL}/api/twitter/${encodeURIComponent(
         s[0].url
@@ -56,6 +72,11 @@ function Tweets({ handle }: { handle: string }) {
     priorAction: (curr) =>
       setResults((x) => [...x, { type: "loading", statusId: curr.statusId }]),
     action: (response, invalidated, curr) => {
+      if (invalidated) {
+        console.log("Invalidated archive response");
+        return;
+      }
+
       response.json().then((x) =>
         setResults((prev) =>
           prev.map((y) => {
@@ -68,7 +89,7 @@ function Tweets({ handle }: { handle: string }) {
         )
       );
     },
-    invalidateCanary: "",
+    invalidateCanary: handle,
     urlAccessor: (s) =>
       `${process.env.NEXT_PUBLIC_SITE_URL}/api/archive/tweet/${
         s.archiveDate

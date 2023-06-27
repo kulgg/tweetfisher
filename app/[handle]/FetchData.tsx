@@ -6,12 +6,15 @@ import {
   archiveQueueAtom,
   archivedTweetsAtom,
   deletedTweetsAtom,
+  missedTweetsAtom,
+  numStatusResponsesAtom,
   twitterStatusQueueAtom,
 } from "@/lib/atoms";
 import { ITweetMap, getUnique } from "@/lib/filter";
 import { DeletedTweet } from "@/lib/types";
 import { useAtom, useSetAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Tweets from "./Tweets";
 
 function FetchData({ handle }: { handle: string }) {
   const [accountStatus, setAccountStatus] = useAtom(accountStatusAtom);
@@ -20,15 +23,19 @@ function FetchData({ handle }: { handle: string }) {
   const setTwitterStatusQueue = useSetAtom(twitterStatusQueueAtom);
   const setArchiveQueue = useSetAtom(archiveQueueAtom);
   const setDeletedTweets = useSetAtom(deletedTweetsAtom);
+  const setNumStatusResponses = useSetAtom(numStatusResponsesAtom);
+  const setMissedTweets = useSetAtom(missedTweetsAtom);
 
   useEffect(() => {
     console.log("Initial useEffect");
     if (accountName != handle) {
       setAccountName(handle);
       setAccountStatus("");
+      setNumStatusResponses(0);
       setArchivedTweets({});
       setTwitterStatusQueue([]);
       setArchiveQueue([]);
+      setMissedTweets([]);
       setDeletedTweets([]);
     }
   }, []);
@@ -63,6 +70,7 @@ function FetchData({ handle }: { handle: string }) {
         });
     }
   }, [archivedTweets]);
+
   return <div></div>;
 }
 
