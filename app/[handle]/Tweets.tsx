@@ -9,6 +9,7 @@ import {
   twitterStatusQueueAtom,
   settingsAtom,
   isAutoScrollAtom,
+  accountNameAtom,
 } from "@/lib/atoms";
 import { ITweetMap } from "@/lib/filter";
 import useFetchQueue from "@/lib/hooks/use-fetch-queue";
@@ -26,6 +27,7 @@ import React, {
 function Tweets({ handle }: { handle: string }) {
   const bottomElementRef = useRef<HTMLDivElement>(null);
   const isAutoScroll = useAtomValue(isAutoScrollAtom);
+  const accountName = useAtomValue(accountNameAtom);
 
   const [archiveMap, setArchiveMap] = useAtom(archivedTweetsAtom);
   const [twitterStatusQueue, setTwitterStatusQueue] = useAtom(
@@ -103,14 +105,14 @@ function Tweets({ handle }: { handle: string }) {
   });
 
   useEffect(() => {
-    if (isAutoScroll) {
+    if (isAutoScroll && results.length > 0 && accountName === handle) {
       bottomElementRef.current?.scrollIntoView({
         behavior: "smooth",
         inline: "nearest",
         block: "center",
       });
     }
-  }, [results, isAutoScroll]);
+  }, [results, isAutoScroll, accountName, handle]);
 
   return (
     <div>

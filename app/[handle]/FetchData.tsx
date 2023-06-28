@@ -38,8 +38,8 @@ function FetchData({ handle }: { handle: string }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("Initial useEffect");
     if (accountName != handle) {
+      scrollTo({ top: 0 });
       setAccountName(handle);
       setAccountStatus("");
       setNumStatusResponses(0);
