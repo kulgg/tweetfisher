@@ -50,7 +50,6 @@ npm run dev
 ## ToDo
 
 - Add export functionality
-- Autoscroll option
 - Parse quote tweets
 - Adaptive throttling
 

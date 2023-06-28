@@ -15,6 +15,7 @@ import {
   archiveQueueAtom,
   archivedTweetsAtom,
   deletedTweetsAtom,
+  isAutoScrollAtom,
   missedTweetsAtom,
   numArchiveResponsesAtom,
   numStatusResponsesAtom,
@@ -23,6 +24,8 @@ import {
 } from "@/lib/atoms";
 import { Button } from "./ui/button";
 import { RotateCcwIcon } from "lucide-react";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
 
 interface FetchProcessData {
   accountType: string;
@@ -67,6 +70,7 @@ function StatusBar() {
   const setTwitterStatusQueue = useSetAtom(twitterStatusQueueAtom);
   const deletedTweets = useAtomValue(deletedTweetsAtom);
 
+  const [isAutoScroll, setIsAutoScroll] = useAtom(isAutoScrollAtom);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
@@ -227,14 +231,27 @@ function StatusBar() {
         ) : (
           <div></div>
         )}
-        <Button
-          variant={"default"}
-          size="sm"
-          className="gap-1 flex items-center"
-          onClick={() => setIsSettingsOpen(true)}
-        >
-          <Icons.settings className="w-4 h-4" /> Settings
-        </Button>
+        <div className="flex items-center gap-4">
+          <div>
+            <div className="flex items-center space-x-2 scale-90">
+              <Switch
+                id="airplane-mode"
+                className="dark:data-[state=checked]:bg-slate-50 dark:data-[state=unchecked]:bg-slate-600"
+                checked={isAutoScroll}
+                onCheckedChange={() => setIsAutoScroll((prev) => !prev)}
+              />
+              <Label htmlFor="airplane-mode">AutoScroll</Label>
+            </div>
+          </div>
+          <Button
+            variant={"default"}
+            size="sm"
+            className="gap-1 flex items-center"
+            onClick={() => setIsSettingsOpen(true)}
+          >
+            <Icons.settings className="w-4 h-4" /> Settings
+          </Button>
+        </div>
         <SettingsDialog isOpen={isSettingsOpen} setIsOpen={setIsSettingsOpen} />
       </div>
     </footer>

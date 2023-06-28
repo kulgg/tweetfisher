@@ -33,15 +33,6 @@ export function SettingsDialog({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={(x) => setIsOpen(x)}>
-      {/* <DialogTrigger asChild>
-        <Button
-          variant={"default"}
-          size="sm"
-          className="gap-1 flex items-center"
-        >
-          <Icons.settings className="w-4 h-4" /> Settings
-        </Button>
-      </DialogTrigger> */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>

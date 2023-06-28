@@ -7,6 +7,8 @@ const settingsAtom = atomWithStorage<Settings>("tweetfisher.settings", {
   tps_settings: { twitter: 1.2, archive: 3.0 },
 });
 
+const isAutoScrollAtom = atomWithStorage("tweetfisher.autoscroll", false);
+
 const accountNameAtom = atom("");
 const accountStatusAtom = atom("");
 const archivedTweetsAtom = atom<ITweetMap>({});
@@ -35,4 +37,5 @@ export {
   missedTweetsAtom,
   numStatusResponsesAtom,
   numArchiveResponsesAtom,
+  isAutoScrollAtom,
 };

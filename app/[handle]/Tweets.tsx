@@ -8,20 +8,25 @@ import {
   numStatusResponsesAtom,
   twitterStatusQueueAtom,
   settingsAtom,
+  isAutoScrollAtom,
 } from "@/lib/atoms";
 import { ITweetMap } from "@/lib/filter";
 import useFetchQueue from "@/lib/hooks/use-fetch-queue";
 import { DeletedTweet } from "@/lib/types";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import React, {
   Suspense,
   SuspenseList,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
 function Tweets({ handle }: { handle: string }) {
+  const bottomElementRef = useRef<HTMLDivElement>(null);
+  const isAutoScroll = useAtomValue(isAutoScrollAtom);
+
   const [archiveMap, setArchiveMap] = useAtom(archivedTweetsAtom);
   const [twitterStatusQueue, setTwitterStatusQueue] = useAtom(
     twitterStatusQueueAtom
@@ -92,11 +97,29 @@ function Tweets({ handle }: { handle: string }) {
       }/${encodeURIComponent(s.url)}`,
   });
 
+  useEffect(() => {
+    if (isAutoScroll) {
+      bottomElementRef.current?.scrollIntoView({
+        behavior: "smooth",
+        inline: "nearest",
+        block: "center",
+      });
+    }
+  }, [results, isAutoScroll]);
+
   return (
-    <div className="my-10 grid w-full grid-flow-dense grid-cols-1 items-center gap-4">
-      {results.map((x, i) => (
-        <Tweet t={x} key={i} />
-      ))}
+    <div>
+      <div className="my-10 grid w-full grid-flow-dense grid-cols-1 items-center gap-4">
+        {results.map((x, i, arr) => {
+          if (i === arr.length - 1)
+            return (
+              <div ref={bottomElementRef} key={i}>
+                <Tweet t={x} />
+              </div>
+            );
+          return <Tweet t={x} key={i} />;
+        })}
+      </div>
     </div>
   );
 }
