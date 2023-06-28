@@ -82,7 +82,12 @@ function Tweets({ handle }: { handle: string }) {
         setResults((prev) =>
           prev.map((y) => {
             if (y.type === "loading" && y.statusId === curr.statusId) {
-              return { ...x, type: "result", handle: handle, url: curr.url };
+              return {
+                ...x,
+                type: "result",
+                handle: handle,
+                url: `https://web.archive.org/web/${curr.archiveDate}/${curr.url}`,
+              };
             }
 
             return y;
